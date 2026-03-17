@@ -91,10 +91,10 @@
         </div>
     </div>
 
-    <!-- Province Overview Table & Alerts -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+    <!-- Province Overview Table -->
+    <div class="grid grid-cols-1 gap-3">
         <!-- Province Overview Table -->
-        <div class="lg:col-span-2 bg-white rounded-xl p-4 shadow-sm border border-blue-100 max-h-[300px] overflow-hidden flex flex-col">
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100 max-h-[300px] overflow-hidden flex flex-col">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-2">
                 <h3 class="font-black text-slate-800 text-base md:text-lg">Province Highlights</h3>
                 <span class="text-blue-600 text-xs font-bold whitespace-nowrap">Region III</span>
@@ -132,29 +132,7 @@
             </div>
         </div>
 
-        <!-- System Alerts -->
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
-            <h3 class="font-black text-slate-800 text-base md:text-lg mb-2">System Alerts</h3>
-            <div class="space-y-2">
-                @php
-                    $alerts = [
-                        ['title' => 'Update Documentation', 'time' => 'Today at 5:00 PM'],
-                        ['title' => 'Review Budget Reports', 'time' => 'Tomorrow at 9:00 AM'],
-                    ];
-                @endphp
-                @foreach($alerts as $alert)
-                <div class="flex items-start gap-2 p-2 rounded-xl bg-blue-50 border border-blue-100 hover:border-blue-300 transition">
-                    <div class="mt-1 flex-shrink-0">
-                        <input type="checkbox" class="rounded text-blue-600 cursor-pointer">
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-xs md:text-sm font-bold text-slate-800 break-words">{{ $alert['title'] }}</p>
-                        <p class="text-[9px] md:text-[10px] text-slate-400 mt-1">{{ $alert['time'] }}</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
+        
     </div>
 </div>
 
@@ -316,23 +294,17 @@
                 {
                     label: 'Completed',
                     data: weeklyCompleted,
-                    backgroundColor: '#1e3a8a',
-                    borderRadius: 10,
-                    borderSkipped: false
+                    backgroundColor: '#1e3a8a'
                 },
                 {
                     label: 'Pending',
                     data: weeklyPending,
-                    backgroundColor: '#2563eb',
-                    borderRadius: 10,
-                    borderSkipped: false
+                    backgroundColor: '#2563eb'
                 },
                 {
                     label: 'Failed',
                     data: weeklyFailed,
-                    backgroundColor: '#93c5fd',
-                    borderRadius: 10,
-                    borderSkipped: false
+                    backgroundColor: '#93c5fd'
                 },
             ]
         },
