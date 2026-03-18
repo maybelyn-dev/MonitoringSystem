@@ -20,12 +20,12 @@
     
     @stack('styles')
 </head>
-<body class="bg-slate-100 antialiased text-slate-900">
+<body class="bg-blue-50 antialiased text-slate-900">
     <div class="flex h-screen overflow-hidden">
         
         {{-- Sidebar Section --}}
         @if(!Request::is('/'))
-            <aside class="w-20 lg:w-64 h-full m-0 shrink-0 border-r border-slate-200/30">
+            <aside class="w-20 lg:w-64 h-full m-0 shrink-0 border-r border-blue-200/40">
                 @include('components.sidebar')
             </aside>
         @endif
@@ -36,7 +36,7 @@
             @include('components.navbar')
 
             {{-- Main Content Area --}}
-            <main class="flex-1 overflow-y-auto bg-slate-100">
+            <main class="flex-1 overflow-y-auto bg-blue-50">
                 <div class="w-full p-8">
                     <div class="max-w-[1400px] mx-auto">
                         @yield('content')
@@ -45,7 +45,7 @@
             </main>
 
             {{-- Footer (Optional) --}}
-            <footer class="bg-white border-t border-slate-200/40 p-3 text-center text-[10px] text-slate-400">
+            <footer class="bg-white border-t border-blue-200/60 p-3 text-center text-[10px] text-blue-400">
                 &copy; {{ date('Y') }} RAMS Region III &bull; Project Monitoring System
             </footer>
         </div>
@@ -54,4 +54,3 @@
     @stack('scripts')
 </body>
 </html>
-

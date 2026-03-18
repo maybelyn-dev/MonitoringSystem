@@ -44,19 +44,42 @@ class DashboardController extends Controller
             'Zambales',
         ];
         $provinces = Province::whereIn('name', $provinceNames)
-            ->whereHas('region', fn ($q) => $q->where('name', 'Region III'))
+            ->whereHas('region', fn ($q) => $q->where('code', 'R3'))
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->unique('name')
+            ->values();
+        $tableLabelMap = [
+            '13.1' => 'Motor Vehicles',
+            '16.2' => 'Banking Deposits',
+            '16.3' => 'Banking Income',
+        ];
+        $years = range(2010, 2022);
 
         $selectedTable = $request->get('table') ?: '13.1';
+        $requestedYear = $request->get('year');
+        $fallbackYear = $selectedTable === '13.1'
+            ? 2022
+            : ($selectedTable === '16.2' ? 2020 : 2019);
+        $selectedYear = in_array((int) $requestedYear, $years, true)
+            ? (int) $requestedYear
+            : $fallbackYear;
+
         $totalRecordsQuery = Statistic::query()
-            ->where('table_reference', $selectedTable);
+            ->where('table_reference', $selectedTable)
+            ->where('year', $selectedYear);
+
+        $totalRecords = 0.0;
+        if (in_array($selectedTable, ['16.2', '16.3'], true)) {
+            $totalRecordsQuery->whereHas('category', fn ($q) => $q->where('name', 'Total'));
+        }
         if ($selectedProvinceId) {
             $totalRecordsQuery->where('province_id', $selectedProvinceId);
+            $totalRecords = (float) $totalRecordsQuery->sum('value');
         } else {
             $totalRecordsQuery->whereIn('province_id', $provinces->pluck('id'));
+            $totalRecords = (float) $totalRecordsQuery->sum('value');
         }
-        $totalRecords = (float) $totalRecordsQuery->sum('value');
         $totalRecordsLabel = $selectedTable === '13.1'
             ? 'Total Registered Vehicles'
             : ($selectedTable === '16.2'
@@ -65,22 +88,43 @@ class DashboardController extends Controller
         $provinceHasData = $selectedProvinceId
             ? Statistic::where('province_id', $selectedProvinceId)
                 ->where('table_reference', '13.1')
+                ->where('year', $selectedYear)
                 ->exists()
             : true;
         $provinceDataStatus = $provinceHasData ? null : 'Data not yet available';
+        $trendUnitLabel = $selectedTable === '13.1' ? 'Units' : 'Billion Pesos';
+        $trendLabels = $years;
+        $trendValues = [];
+        foreach ($years as $year) {
+            $trendQuery = Statistic::query()
+                ->where('table_reference', $selectedTable)
+                ->where('year', $year);
+
+            if ($selectedTable === '13.1') {
+                $trendQuery->whereHas('category', fn ($q) => $q->whereIn('name', ['Private', 'For Hire', 'Government']));
+            } else {
+                $trendQuery->whereHas('category', fn ($q) => $q->where('name', 'Total'));
+            }
+
+            if ($selectedProvinceId) {
+                $trendQuery->where('province_id', $selectedProvinceId);
+                $trendValues[] = (float) $trendQuery->sum('value');
+            } else {
+                $trendQuery->whereIn('province_id', $provinces->pluck('id'));
+                $trendValues[] = (float) $trendQuery->sum('value');
+            }
+        }
 
         if (!$region) {
             $metrics = [
                 [
                     'label' => $totalRecordsLabel,
-                    'value' => $totalRecords > 0
-                        ? ($selectedTable === '13.1'
-                            ? number_format($totalRecords, 0)
-                            : number_format($totalRecords, 1))
-                        : 'Data not yet available',
+                    'value' => $selectedTable === '13.1'
+                        ? number_format($totalRecords, 0)
+                        : number_format($totalRecords, 1),
                     'icon' => 'fa-database',
                     'trend' => 'Region III',
-                    'subtitle' => 'Selected Table',
+                    'subtitle' => $tableLabelMap[$selectedTable] ?? $selectedTable,
                 ],
                 [
                     'label' => 'Total Banking Liabilities',
@@ -123,7 +167,13 @@ class DashboardController extends Controller
                 'latestIncomeData',
                 'provinces',
                 'selectedProvinceId',
-                'provinceDataStatus'
+                'provinceDataStatus',
+                'years',
+                'selectedYear',
+                'selectedTable',
+                'trendLabels',
+                'trendValues',
+                'trendUnitLabel'
             ));
         }
 
@@ -177,25 +227,28 @@ class DashboardController extends Controller
         $vehicleChartPrivate = $vehicleByProvince->map(fn ($row) => (int) $row->private_vehicles)->values();
         $vehicleChartForHire = $vehicleByProvince->map(fn ($row) => (int) $row->for_hire)->values();
 
-        // Banking institutions distribution (2020)
+        $bankingDistributionSource = EconomicData::where('region_id', $region->id)
+            ->where('data_type', 'banking')
+            ->where('year', $selectedYear)
+            ->first();
+
+        // Banking institutions distribution (selected year)
         $bankingDistribution = [
-            'Universal Banks' => $latestBankingData?->universal_banks ?? 0,
-            'Thrift Banks' => $latestBankingData?->thrift_banks ?? 0,
-            'Rural Banks' => $latestBankingData?->rural_banks ?? 0,
+            'Universal Banks' => $bankingDistributionSource?->universal_banks ?? 0,
+            'Thrift Banks' => $bankingDistributionSource?->thrift_banks ?? 0,
+            'Rural Banks' => $bankingDistributionSource?->rural_banks ?? 0,
         ];
 
         // Prepare metrics for dashboard
         $metrics = [
             [
                 'label' => $totalRecordsLabel,
-                'value' => $totalRecords > 0
-                    ? ($selectedTable === '13.1'
-                        ? number_format($totalRecords, 0)
-                        : number_format($totalRecords, 1))
-                    : 'Data not yet available',
+                'value' => $selectedTable === '13.1'
+                    ? number_format($totalRecords, 0)
+                    : number_format($totalRecords, 1),
                 'icon' => 'fa-database',
                 'trend' => 'Selected Table',
-                'subtitle' => $selectedTable,
+                    'subtitle' => $tableLabelMap[$selectedTable] ?? $selectedTable,
             ],
             [
                 'label' => 'Total Banking Liabilities',
@@ -262,7 +315,13 @@ class DashboardController extends Controller
             'latestIncomeData',
             'provinces',
             'selectedProvinceId',
-            'provinceDataStatus'
+            'provinceDataStatus',
+            'years',
+            'selectedYear',
+            'selectedTable',
+            'trendLabels',
+            'trendValues',
+            'trendUnitLabel'
         ));
     }
 }

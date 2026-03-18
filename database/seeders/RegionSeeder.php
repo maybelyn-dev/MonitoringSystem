@@ -27,8 +27,8 @@ class RegionSeeder extends Seeder
             ['name' => 'Bulacan', 'code' => 'BUL'],
             ['name' => 'Nueva Ecija', 'code' => 'NEC'],
             ['name' => 'Pampanga', 'code' => 'PAM'],
-            ['name' => 'Quezon', 'code' => 'QUE'],
             ['name' => 'Tarlac', 'code' => 'TAR'],
+            ['name' => 'Zambales', 'code' => 'ZAM'],
         ];
 
         foreach ($provinces as $province) {

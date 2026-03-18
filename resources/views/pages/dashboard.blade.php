@@ -14,7 +14,10 @@
                 <select name="province_id" onchange="this.form.submit()"
                         class="bg-white text-slate-700 text-xs font-semibold rounded-lg px-3 py-2 border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
                     <option value="">Region III</option>
-                    @foreach($provinces as $province)
+                    @php
+                        $provinceOptions = $provinces->unique('name')->values();
+                    @endphp
+                    @foreach($provinceOptions as $province)
                         <option value="{{ $province->id }}" {{ (string) $selectedProvinceId === (string) $province->id ? 'selected' : '' }}>
                             {{ $province->name }}
                         </option>
@@ -50,19 +53,15 @@
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 gap-3">
-        <!-- Large Wavy Chart -->
+        <!-- Regional Performance Trends -->
         <div class="w-full bg-white rounded-xl p-3 shadow-sm border border-blue-100 flex flex-col">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-2 shrink-0">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-1.5 shrink-0">
                 <div>
-                    <p class="text-xs font-bold text-blue-600 uppercase tracking-widest">Performance</p>
-                    <h2 class="text-base md:text-lg font-black text-slate-800">Wavy Chart</h2>
-                </div>
-                <div class="flex gap-2">
-                    <button class="px-3 md:px-3.5 py-1.5 bg-blue-600 text-white rounded-xl text-[11px] font-bold hover:bg-blue-700 transition whitespace-nowrap">Monthly</button>
-                    <button class="px-3 md:px-3.5 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-[11px] font-bold hover:bg-blue-100 transition whitespace-nowrap">Yearly</button>
+                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Performance</p>
+                    <h2 class="text-sm md:text-base font-black text-slate-800">Regional Performance Trends</h2>
                 </div>
             </div>
-            <div class="flex-1 h-[180px] max-h-[180px]">
+            <div class="flex-1 h-[360px] max-h-[360px]">
                 <div class="relative w-full h-full">
                     <canvas id="wavyChart" class="w-full h-full"></canvas>
                 </div>
@@ -73,41 +72,41 @@
 
     <!-- Bottom Charts Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <!-- Doughnut Chart -->
-        <div class="bg-white rounded-xl p-3 shadow-sm border border-blue-100">
+        <!-- Banking Type Distribution -->
+        <div class="bg-white rounded-xl p-3 shadow-sm border border-blue-100 h-[300px] flex flex-col overflow-visible">
             <div class="mb-2">
-                <p class="text-xs font-bold text-blue-600 uppercase tracking-widest">Earnings</p>
-                <h3 class="text-base md:text-lg font-black text-slate-800">Doughnut Chart</h3>
+                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Earnings</p>
+                <h3 class="text-sm md:text-base font-black text-slate-800">Banking Type Distribution</h3>
             </div>
-            <div class="relative w-full h-[180px] max-h-[180px]">
-                <canvas id="doughnutChart" class="absolute inset-0 w-full h-full"></canvas>
+            <div class="relative w-full flex-1 h-[280px]">
+                <canvas id="doughnutChart" class="absolute inset-0 w-full h-full block"></canvas>
             </div>
         </div>
 
-        <!-- Stacked Bar Chart -->
-        <div class="bg-white rounded-2xl p-3 shadow-sm border border-blue-100">
+        <!-- Daily System Activity -->
+        <div class="bg-white rounded-2xl p-3 shadow-sm border border-blue-100 h-[300px] flex flex-col">
             <div class="flex flex-col gap-2">
                 <div>
-                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">CONVERSIONS</p>
-                    <h3 class="text-base md:text-lg font-black text-slate-800">Weekly Conversions</h3>
+                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">SYSTEM</p>
+                    <h3 class="text-sm md:text-base font-black text-slate-800">Daily System Activity</h3>
                 </div>
-                <div class="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-500">
+                <div class="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-500">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-900"></span>
-                        <span>Completed</span>
+                        <span>Private</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-                        <span>Pending</span>
+                        <span>For Hire</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span>
-                        <span>Failed</span>
+                        <span>Government</span>
                     </div>
                 </div>
             </div>
-            <div class="relative w-full h-[190px] max-h-[190px] mt-3">
-                <canvas id="stackedBarChart" class="absolute inset-0 w-full h-full"></canvas>
+            <div class="relative w-full flex-1 min-h-[200px] mt-2 px-1">
+                <canvas id="stackedBarChart" class="absolute inset-0 w-full h-full block"></canvas>
             </div>
         </div>
     </div>
@@ -160,33 +159,36 @@
 @push('scripts')
 <script>
     const peso = '{!! '₱' !!}';
-    const bankingLabels = @json($bankingTrend->pluck('year')->values());
-    const bankingLiabilities = @json($bankingTrend->pluck('banking_liabilities')->values()).map(Number);
-
-    const incomeByYear = @json($incomeTrend->keyBy('year')->map->operating_income);
-    const incomeSeries = bankingLabels.map((y) => (incomeByYear && incomeByYear[y]) ? Number(incomeByYear[y]) : null);
+    const trendLabels = @json($trendLabels);
+    const trendValues = @json($trendValues).map(Number);
+    const trendUnitLabel = @json($trendUnitLabel);
+    const selectedTable = @json($selectedTable ?? '13.1');
 
     const bankingDistribution = @json($bankingDistribution);
-    const doughnutData = [
+    let doughnutData = [
         Number(bankingDistribution['Universal Banks'] ?? 0),
         Number(bankingDistribution['Thrift Banks'] ?? 0),
         Number(bankingDistribution['Rural Banks'] ?? 0),
     ];
+    const hasDoughnutData = doughnutData.some((value) => value > 0);
+    if (!hasDoughnutData) {
+        doughnutData = [714.6, 57.3, 35.3];
+    }
 
     const weeklyLabels = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    const weeklyCompleted = [34, 28, 40, 36, 44, 26, 38];
-    const weeklyPending = [14, 10, 16, 12, 18, 9, 13];
-    const weeklyFailed = [6, 5, 7, 4, 6, 3, 5];
-    // Banking Liabilities Trend Chart (2011-2020)
+    const weeklyPrivate = [48, 55, 51, 60, 58, 44, 47];
+    const weeklyForHire = [12, 15, 14, 18, 17, 11, 13];
+    const weeklyGovernment = [5, 6, 4, 7, 6, 3, 4];
+    // Regional Performance Trend Chart (Yearly)
     const wavyCtx = document.getElementById('wavyChart').getContext('2d');
     const wavyChart = new Chart(wavyCtx, {
         type: 'line',
         data: {
-            labels: bankingLabels,
+            labels: trendLabels,
             datasets: [
                 {
-                    label: `Banking Liabilities (${peso})`,
-                    data: bankingLiabilities,
+                    label: selectedTable === '13.1' ? 'Motor Vehicles' : 'Banking Total',
+                    data: trendValues,
                     borderColor: '#2563eb',
                     backgroundColor: 'rgba(37, 99, 235, 0.05)',
                     borderWidth: 3,
@@ -194,21 +196,6 @@
                     tension: 0.4,
                     pointRadius: 5,
                     pointBackgroundColor: '#2563eb',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 7,
-                },
-                {
-                    label: `Operating Income (${peso})`,
-                    data: incomeSeries,
-                    spanGaps: true,
-                    borderColor: '#22d3ee',
-                    backgroundColor: 'rgba(34, 211, 238, 0.05)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointBackgroundColor: '#22d3ee',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
                     pointHoverRadius: 7,
@@ -237,7 +224,9 @@
                         label: (context) => {
                             const value = context.parsed?.y ?? context.parsed ?? 0;
                             const formatted = new Intl.NumberFormat('en-PH', { maximumFractionDigits: 1 }).format(value);
-                            return `${context.dataset.label}: ${peso}${formatted}B`;
+                            return selectedTable === '13.1'
+                                ? `${context.dataset.label}: ${formatted}`
+                                : `${context.dataset.label}: ${peso}${formatted}B`;
                         }
                     }
                 },
@@ -245,13 +234,19 @@
                     propagate: true
                 }
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(226, 232, 240, 0.5)',
-                        drawBorder: false
-                    },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: selectedTable === '13.1' ? 'Units' : 'Billion Pesos',
+                            color: '#64748b',
+                            font: { size: 10, weight: 'bold', family: "'Inter', sans-serif" }
+                        },
+                        grid: {
+                            color: 'rgba(226, 232, 240, 0.5)',
+                            drawBorder: false
+                        },
                     ticks: {
                         font: { size: 10, family: "'Inter', sans-serif" },
                         color: '#94a3b8'
@@ -271,7 +266,7 @@
         }
     });
 
-    // Banking Institutions Distribution (2020)
+    // Banking Type Distribution (Selected Year)
     const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
     const doughnutChart = new Chart(doughnutCtx, {
         type: 'doughnut',
@@ -300,12 +295,23 @@
                         font: { size: 10, weight: 'bold', family: "'Inter', sans-serif" },
                         color: '#64748b'
                     }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => {
+                            const total = doughnutData.reduce((sum, val) => sum + val, 0) || 1;
+                            const value = context.parsed ?? 0;
+                            const percent = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${value} (${percent}%)`;
+                        }
+                    }
                 }
             }
         }
     });
+    doughnutChart.resize();
 
-    // Weekly Conversions (Stacked)
+    // Daily System Activity (Simulated)
     const stackedBarCtx = document.getElementById('stackedBarChart').getContext('2d');
     const stackedBarChart = new Chart(stackedBarCtx, {
         type: 'bar',
@@ -313,18 +319,18 @@
             labels: weeklyLabels,
             datasets: [
                 {
-                    label: 'Completed',
-                    data: weeklyCompleted,
+                    label: 'Private',
+                    data: weeklyPrivate,
                     backgroundColor: '#1e3a8a'
                 },
                 {
-                    label: 'Pending',
-                    data: weeklyPending,
+                    label: 'For Hire',
+                    data: weeklyForHire,
                     backgroundColor: '#2563eb'
                 },
                 {
-                    label: 'Failed',
-                    data: weeklyFailed,
+                    label: 'Government',
+                    data: weeklyGovernment,
                     backgroundColor: '#93c5fd'
                 },
             ]

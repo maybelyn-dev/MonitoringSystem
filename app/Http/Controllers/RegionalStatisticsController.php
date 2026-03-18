@@ -12,6 +12,7 @@ class RegionalStatisticsController extends Controller
     {
         $selectedInput = $request->get('province') ?: 'Bulacan';
         $selectedTable = $request->get('table') ?: '13.1';
+        $years = range(2010, 2022);
         $allowedTables = ['13.1', '16.2', '16.3'];
         if (!in_array($selectedTable, $allowedTables, true)) {
             $selectedTable = '13.1';
@@ -21,16 +22,16 @@ class RegionalStatisticsController extends Controller
             ? Province::find($selectedInput)
             : Province::where('name', $selectedInput)->first();
 
-        if (in_array($selectedTable, ['16.2', '16.3'], true)) {
-            $province = Province::where('name', 'Region III Total')->first() ?? $province;
-        }
-
-        $selectedYear = 2018;
+        $defaultYear = 2022;
         if ($selectedTable === '16.2') {
-            $selectedYear = 2020;
+            $defaultYear = 2020;
         } elseif ($selectedTable === '16.3') {
-            $selectedYear = 2019;
+            $defaultYear = 2019;
         }
+        $requestedYear = $request->get('year');
+        $selectedYear = in_array((int) $requestedYear, $years, true)
+            ? (int) $requestedYear
+            : $defaultYear;
 
         $stats = $province
             ? Statistic::query()
@@ -74,9 +75,9 @@ class RegionalStatisticsController extends Controller
         $privateValue = (float) ($stats->first(fn ($stat) => $stat->category?->name === 'Private')?->value ?? 0);
         $forHireValue = (float) ($stats->first(fn ($stat) => $stat->category?->name === 'For Hire')?->value ?? 0);
         $governmentValue = (float) ($stats->first(fn ($stat) => $stat->category?->name === 'Government')?->value ?? 0);
-        $latestVehicleYear = $stats->isEmpty() ? null : $selectedYear;
-        $latestBankingYear = null;
-        $bankingTotalValue = null;
+        $latestVehicleYear = $selectedTable === '13.1' ? $selectedYear : null;
+        $latestBankingYear = in_array($selectedTable, ['16.2', '16.3'], true) ? $selectedYear : null;
+        $bankingTotalValue = $selectedTable === '13.1' ? null : $totalRecordsValue;
 
         return view('pages.regional-statistics', [
             'stats' => $stats,
@@ -95,6 +96,8 @@ class RegionalStatisticsController extends Controller
             'latestBankingYear' => $latestBankingYear,
             'bankingTotalValue' => $bankingTotalValue,
             'isEmpty' => $stats->isEmpty(),
+            'years' => $years,
+            'selectedYear' => $selectedYear,
         ]);
     }
 }

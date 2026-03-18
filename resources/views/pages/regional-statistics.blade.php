@@ -19,18 +19,31 @@
             </div>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '13.1']) }}"
+            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '13.1', 'year' => $selectedYear]) }}"
                class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '13.1' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
                 Motor Vehicles
             </a>
-            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.2']) }}"
+            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.2', 'year' => $selectedYear]) }}"
                class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '16.2' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
                 Banking Deposits
             </a>
-            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.3']) }}"
+            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.3', 'year' => $selectedYear]) }}"
                class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '16.3' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
                 Banking Income
             </a>
+            <form action="{{ route('regional-statistics') }}" method="GET" class="flex items-center gap-2 ml-auto">
+                <input type="hidden" name="province" value="{{ $selectedProvince }}">
+                <input type="hidden" name="table" value="{{ $selectedTable }}">
+                <label class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Year</label>
+                <select name="year" onchange="this.form.submit()"
+                        class="bg-white text-slate-700 text-[11px] font-semibold rounded-lg px-2 py-1 border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    @foreach($years as $year)
+                        <option value="{{ $year }}" {{ (int) $selectedYear === (int) $year ? 'selected' : '' }}>
+                            {{ $year }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
         </div>
     </div>
 
@@ -88,7 +101,7 @@
                     </h2>
                 </div>
                 <div class="text-[10px] text-slate-500">
-                    Year: <span class="font-semibold text-slate-700">{{ $latestVehicleYear ?? 'N/A' }}</span>
+                    Year: <span class="font-semibold text-slate-700">{{ $selectedYear ?? 'N/A' }}</span>
                 </div>
             </div>
             <div class="h-[190px]">
