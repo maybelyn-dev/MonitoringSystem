@@ -43,9 +43,11 @@
                     </label>
                     <select name="province_id" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700">
                         <option value="">-- Choose a province --</option>
-                        @foreach($provinces as $province)
+                        @forelse($provinces->unique('name') as $province)
                             <option value="{{ $province->id }}" {{ (string) old('province_id') === (string) $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
-                        @endforeach
+                        @empty
+                            <option value="" disabled>No provinces available</option>
+                        @endforelse
                     </select>
                     @error('province_id')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>

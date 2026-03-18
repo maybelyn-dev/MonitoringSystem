@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Region;
 use App\Models\EconomicData;
+use App\Models\Province;
+use App\Models\Statistic;
 use App\Models\VehicleRegistration;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -25,14 +28,60 @@ class DashboardController extends Controller
     /**
      * Display the dashboard with real economic data
      */
-    public function index()
+    public function index(Request $request)
     {
         // Get Region III data
         $region = Region::where('code', 'R3')->first();
         $userProvinceId = Auth::user()?->province_id;
+        $selectedProvinceId = $request->get('province_id') ?: $userProvinceId;
+        $provinceNames = [
+            'Aurora',
+            'Bataan',
+            'Bulacan',
+            'Nueva Ecija',
+            'Pampanga',
+            'Tarlac',
+            'Zambales',
+        ];
+        $provinces = Province::whereIn('name', $provinceNames)
+            ->whereHas('region', fn ($q) => $q->where('name', 'Region III'))
+            ->orderBy('name')
+            ->get();
+
+        $selectedTable = $request->get('table') ?: '13.1';
+        $totalRecordsQuery = Statistic::query()
+            ->where('table_reference', $selectedTable);
+        if ($selectedProvinceId) {
+            $totalRecordsQuery->where('province_id', $selectedProvinceId);
+        } else {
+            $totalRecordsQuery->whereIn('province_id', $provinces->pluck('id'));
+        }
+        $totalRecords = (float) $totalRecordsQuery->sum('value');
+        $totalRecordsLabel = $selectedTable === '13.1'
+            ? 'Total Registered Vehicles'
+            : ($selectedTable === '16.2'
+                ? 'Total Deposits (Billion Pesos)'
+                : 'Total Banking Income (Billion Pesos)');
+        $provinceHasData = $selectedProvinceId
+            ? Statistic::where('province_id', $selectedProvinceId)
+                ->where('table_reference', '13.1')
+                ->exists()
+            : true;
+        $provinceDataStatus = $provinceHasData ? null : 'Data not yet available';
 
         if (!$region) {
             $metrics = [
+                [
+                    'label' => $totalRecordsLabel,
+                    'value' => $totalRecords > 0
+                        ? ($selectedTable === '13.1'
+                            ? number_format($totalRecords, 0)
+                            : number_format($totalRecords, 1))
+                        : 'Data not yet available',
+                    'icon' => 'fa-database',
+                    'trend' => 'Region III',
+                    'subtitle' => 'Selected Table',
+                ],
                 [
                     'label' => 'Total Banking Liabilities',
                     'value' => "\u{20B1}807.1B",
@@ -71,7 +120,10 @@ class DashboardController extends Controller
                 'bankingDistribution',
                 'latestBankingData',
                 'latestVehicleData',
-                'latestIncomeData'
+                'latestIncomeData',
+                'provinces',
+                'selectedProvinceId',
+                'provinceDataStatus'
             ));
         }
 
@@ -84,8 +136,8 @@ class DashboardController extends Controller
         // Get latest vehicle registration data (2022); if user selected a province, scope to that province.
         $latestVehicleQuery = VehicleRegistration::where('region_id', $region->id)
             ->where('year', 2022);
-        if ($userProvinceId) {
-            $latestVehicleQuery->where('province_id', $userProvinceId);
+        if ($selectedProvinceId) {
+            $latestVehicleQuery->where('province_id', $selectedProvinceId);
         } else {
             $latestVehicleQuery->whereNull('province_id');
         }
@@ -116,8 +168,8 @@ class DashboardController extends Controller
             ->whereNotNull('province_id')
             ->where('year', 2022)
             ->with('province');
-        if ($userProvinceId) {
-            $vehicleByProvinceQuery->where('province_id', $userProvinceId);
+        if ($selectedProvinceId) {
+            $vehicleByProvinceQuery->where('province_id', $selectedProvinceId);
         }
         $vehicleByProvince = $vehicleByProvinceQuery->get();
 
@@ -134,6 +186,17 @@ class DashboardController extends Controller
 
         // Prepare metrics for dashboard
         $metrics = [
+            [
+                'label' => $totalRecordsLabel,
+                'value' => $totalRecords > 0
+                    ? ($selectedTable === '13.1'
+                        ? number_format($totalRecords, 0)
+                        : number_format($totalRecords, 1))
+                    : 'Data not yet available',
+                'icon' => 'fa-database',
+                'trend' => 'Selected Table',
+                'subtitle' => $selectedTable,
+            ],
             [
                 'label' => 'Total Banking Liabilities',
                 'value' => "\u{20B1}" . number_format($latestBankingData?->banking_liabilities ?? 0, 1) . 'B',
@@ -196,7 +259,10 @@ class DashboardController extends Controller
             'bankingDistribution',
             'latestBankingData',
             'latestVehicleData',
-            'latestIncomeData'
+            'latestIncomeData',
+            'provinces',
+            'selectedProvinceId',
+            'provinceDataStatus'
         ));
     }
 }

@@ -16,8 +16,20 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        $provinces = Province::whereHas('region', fn ($q) => $q->where('code', 'R3'))
-            ->orderBy('name')
+        $provinceNames = [
+            'Aurora',
+            'Bataan',
+            'Bulacan',
+            'Nueva Ecija',
+            'Pampanga',
+            'Tarlac',
+            'Zambales',
+        ];
+        $provinces = Province::whereIn('name', $provinceNames)
+            ->whereHas('region', function ($query) {
+                $query->where('name', 'Region III');
+            })
+            ->orderBy('name', 'asc')
             ->get();
         return view('auth.login', compact('provinces'));
     }
@@ -65,8 +77,20 @@ class AuthController extends Controller
      */
     public function showRegister()
     {
-        $provinces = Province::whereHas('region', fn ($q) => $q->where('code', 'R3'))
-            ->orderBy('name')
+        $provinceNames = [
+            'Aurora',
+            'Bataan',
+            'Bulacan',
+            'Nueva Ecija',
+            'Pampanga',
+            'Tarlac',
+            'Zambales',
+        ];
+        $provinces = Province::whereIn('name', $provinceNames)
+            ->whereHas('region', function ($query) {
+                $query->where('name', 'Region III');
+            })
+            ->orderBy('name', 'asc')
             ->get();
         return view('pages.auth.register', compact('provinces'));
     }

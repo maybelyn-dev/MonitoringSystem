@@ -9,9 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Province extends Model
 {
     protected $fillable = [
-        'region_id',
         'name',
-        'code',
+        'region_id',
     ];
 
     /**
@@ -36,5 +35,33 @@ class Province extends Model
     public function vehicleRegistrations(): HasMany
     {
         return $this->hasMany(VehicleRegistration::class);
+    }
+
+    /**
+     * Get all statistics for this province.
+     */
+    public function statistics(): HasMany
+    {
+        return $this->hasMany(Statistic::class);
+    }
+
+    /**
+     * Eager-load a summed value for statistics, with optional filters.
+     */
+    public function scopeWithStatisticsTotal($query, ?int $year = null, ?string $category = null)
+    {
+        return $query->withSum(
+            [
+                'statistics as statistics_total' => function ($stats) use ($year, $category) {
+                    if ($year !== null) {
+                        $stats->where('year', $year);
+                    }
+                    if ($category !== null) {
+                        $stats->whereHas('category', fn ($q) => $q->where('name', $category));
+                    }
+                },
+            ],
+            'value'
+        );
     }
 }
