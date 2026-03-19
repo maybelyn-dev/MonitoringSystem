@@ -58,7 +58,6 @@
                     @error('province_id')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
-                </div>
 
                 <!-- Email -->
                 <div>

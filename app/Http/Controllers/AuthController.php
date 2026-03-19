@@ -27,7 +27,7 @@ class AuthController extends Controller
         ];
         $provinces = Province::whereIn('name', $provinceNames)
             ->whereHas('region', function ($query) {
-                $query->where('name', 'Region III');
+                $query->where('code', 'R3');
             })
             ->orderBy('name', 'asc')
             ->get();
@@ -88,7 +88,7 @@ class AuthController extends Controller
         ];
         $provinces = Province::whereIn('name', $provinceNames)
             ->whereHas('region', function ($query) {
-                $query->where('name', 'Region III');
+                $query->where('code', 'R3');
             })
             ->orderBy('name', 'asc')
             ->get();
