@@ -9,15 +9,7 @@
     @vite('resources/css/app.css')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        window.appConfig = @json([
-            'baseUrl' => url('/'),
-            'csrfToken' => csrf_token(),
-            'routes' => [
-                'region3Provinces' => route('api.provinces.region3'),
-            ],
-        ]);
-    </script>
+
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -127,7 +119,5 @@
             &copy; 2026 Region 3 Monitoring Portal. All rights reserved.
         </p>
     </div>
-
-    @vite('resources/js/login-provinces.js')
 </body>
 </html>
