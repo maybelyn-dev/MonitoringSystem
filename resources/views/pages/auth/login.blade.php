@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - RAMS Region III</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="app-base-url" content="{{ url('/') }}">
     @vite('resources/css/app.css')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        window.appConfig = @json([
+            'baseUrl' => url('/'),
+            'csrfToken' => csrf_token(),
+            'routes' => [
+                'region3Provinces' => route('api.provinces.region3'),
+            ],
+        ]);
+    </script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -41,7 +52,7 @@
                     <label class="block text-sm font-bold text-slate-700 mb-2">
                         <i class="fas fa-building text-blue-600 mr-2"></i>Select Your Province *
                     </label>
-                    <select name="province_id" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700">
+                    <select id="province_id" name="province_id" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700">
                         <option value="">-- Choose a province --</option>
                         @forelse($provinces->unique('name') as $province)
                             <option value="{{ $province->id }}" {{ (string) old('province_id') === (string) $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
@@ -49,6 +60,8 @@
                             <option value="" disabled>No provinces available</option>
                         @endforelse
                     </select>
+                    <div id="province-loading" class="text-xs text-slate-500 mt-1">Loading provinces...</div>
+                    <div id="province-error" class="text-xs text-red-600 mt-1 hidden">Could not load provinces. Using fallback list.</div>
                     @error('province_id')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
@@ -109,5 +122,7 @@
             &copy; 2026 RAMS Region III. All rights reserved.
         </p>
     </div>
+
+    @vite('resources/js/login-provinces.js')
 </body>
 </html>

@@ -14,23 +14,16 @@ class AuthController extends Controller
     /**
      * Show the login form
      */
+    private function region3ProvincesQuery()
+    {
+        return Province::whereHas('region', function ($query) {
+            $query->where('name', 'Region III');
+        })->orderBy('name', 'asc');
+    }
+
     public function showLogin()
     {
-        $provinceNames = [
-            'Aurora',
-            'Bataan',
-            'Bulacan',
-            'Nueva Ecija',
-            'Pampanga',
-            'Tarlac',
-            'Zambales',
-        ];
-        $provinces = Province::whereIn('name', $provinceNames)
-            ->whereHas('region', function ($query) {
-                $query->where('name', 'Region III');
-            })
-            ->orderBy('name', 'asc')
-            ->get();
+        $provinces = $this->region3ProvincesQuery()->get();
         return view('auth.login', compact('provinces'));
     }
 
@@ -77,21 +70,7 @@ class AuthController extends Controller
      */
     public function showRegister()
     {
-        $provinceNames = [
-            'Aurora',
-            'Bataan',
-            'Bulacan',
-            'Nueva Ecija',
-            'Pampanga',
-            'Tarlac',
-            'Zambales',
-        ];
-        $provinces = Province::whereIn('name', $provinceNames)
-            ->whereHas('region', function ($query) {
-                $query->where('name', 'Region III');
-            })
-            ->orderBy('name', 'asc')
-            ->get();
+        $provinces = $this->region3ProvincesQuery()->get();
         return view('pages.auth.register', compact('provinces'));
     }
 
@@ -150,6 +129,12 @@ class AuthController extends Controller
     /**
      * Handle logout
      */
+    public function getRegion3Provinces()
+    {
+        $provinces = $this->region3ProvincesQuery()->get(['id', 'name']);
+        return response()->json(['provinces' => $provinces]);
+    }
+
     public function logout()
     {
         Auth::logout();

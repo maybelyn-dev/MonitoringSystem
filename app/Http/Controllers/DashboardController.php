@@ -33,7 +33,7 @@ class DashboardController extends Controller
         // Get Region III data
         $region = Region::where('code', 'R3')->first();
         $userProvinceId = Auth::user()?->province_id;
-        $selectedProvinceId = $request->get('province_id') ?: $userProvinceId;
+        $requestedProvinceId = $request->get('province_id');
         $provinceNames = [
             'Aurora',
             'Bataan',
@@ -49,6 +49,12 @@ class DashboardController extends Controller
             ->get()
             ->unique('name')
             ->values();
+        $selectedProvinceId = $requestedProvinceId !== null && $requestedProvinceId !== ''
+            ? (int) $requestedProvinceId
+            : $userProvinceId;
+        if ($selectedProvinceId && !$provinces->pluck('id')->contains((int) $selectedProvinceId)) {
+            $selectedProvinceId = $userProvinceId;
+        }
         $tableLabelMap = [
             '13.1' => 'Motor Vehicles',
             '16.2' => 'Banking Deposits',
