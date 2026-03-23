@@ -70,6 +70,15 @@ class ProjectController extends Controller
     }
 
     /**
+     * Display the specified project
+     */
+    public function show(Project $project)
+    {
+        $this->authorize('view', $project);
+        return view('pages.projects.show', compact('project'));
+    }
+
+    /**
      * Update the specified project in storage
      */
     public function update(Request $request, Project $project)
@@ -99,6 +108,6 @@ class ProjectController extends Controller
         $this->authorize('delete', $project);
         $project->delete();
 
-        return redirect()->route('projects.index')->with('success', 'Project deleted successfully!');
+        return redirect()->route('projects.index')->with('success', 'Project archived successfully!');
     }
 }

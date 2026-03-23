@@ -10,9 +10,15 @@
                 <p class="text-slate-500 mt-2">Manage your agency's projects</p>
             </div>
             @if (auth()->user()?->canWrite())
-                <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                    <i class="fas fa-plus"></i> New Project
-                </a>
+                <x-action-button
+                    href="{{ route('projects.create') }}"
+                    variant="create"
+                    size="md"
+                    icon="fas fa-plus"
+                    @click.prevent="$dispatch('open-modal', 'project-create')"
+                >
+                    Create
+                </x-action-button>
             @endif
         </div>
     </div>
@@ -57,22 +63,37 @@
                                     </span>
                                 </td>
                                 <td class="py-4 px-4">
-                                    @if (auth()->user()?->canWrite())
-                                        <div class="flex gap-2">
-                                            <a href="{{ route('projects.edit', $project) }}" class="text-blue-600 hover:text-blue-700 font-bold text-xs">
-                                                <i class="fas fa-edit"></i> Edit
-                                            </a>
-                                            <form action="{{ route('projects.destroy', $project) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-700 font-bold text-xs">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
-                                            </form>
-                                        </div>
-                                    @else
-                                        <span class="text-xs text-slate-400">Read-only</span>
-                                    @endif
+                                    <div class="flex flex-wrap gap-2">
+                                        <x-action-button
+                                            href="{{ route('projects.show', $project) }}"
+                                            variant="view"
+                                            size="xs"
+                                            icon="fas fa-eye"
+                                            @click.prevent="$dispatch('open-modal', 'project-view-{{ $project->id }}')"
+                                        >
+                                            View
+                                        </x-action-button>
+
+                                        @if (auth()->user()?->canWrite())
+                                            <x-action-button
+                                                href="{{ route('projects.edit', $project) }}"
+                                                variant="edit"
+                                                size="xs"
+                                                icon="fas fa-pen"
+                                                @click.prevent="$dispatch('open-modal', 'project-edit-{{ $project->id }}')"
+                                            >
+                                                Edit
+                                            </x-action-button>
+                                            <x-action-button
+                                                variant="archive"
+                                                size="xs"
+                                                icon="fas fa-archive"
+                                                @click.prevent="$dispatch('open-modal', 'project-archive-{{ $project->id }}')"
+                                            >
+                                                Archive
+                                            </x-action-button>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -90,12 +111,128 @@
                 <p class="text-slate-500 font-bold">No projects yet</p>
                 <p class="text-slate-400 text-sm mt-1">Create your first project to get started</p>
                 @if (auth()->user()?->canWrite())
-                    <a href="{{ route('projects.create') }}" class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition">
-                        Create Project
-                    </a>
+                    <x-action-button
+                        href="{{ route('projects.create') }}"
+                        variant="create"
+                        size="md"
+                        class="mt-4"
+                        @click.prevent="$dispatch('open-modal', 'project-create')"
+                    >
+                        Create
+                    </x-action-button>
                 @endif
             </div>
         @endif
     </div>
+
+    @if (auth()->user()?->canWrite())
+        <x-modal name="project-create" title="Create Project" subtitle="Add a new project to your agency">
+            <form id="project-create-form" action="{{ route('projects.store') }}" method="POST" class="space-y-5">
+                @csrf
+                @include('pages.projects._form-fields')
+            </form>
+
+            @slot('footer')
+                <x-action-button type="button" variant="view" size="sm" @click.prevent="$dispatch('close-modal')">
+                    Cancel
+                </x-action-button>
+                <x-action-button type="submit" variant="create" size="sm" form="project-create-form">
+                    Create
+                </x-action-button>
+            @endslot
+        </x-modal>
+    @endif
+
+    @foreach ($projects as $project)
+        <x-modal name="project-view-{{ $project->id }}" title="Project Details" subtitle="{{ $project->name }}">
+            <div class="space-y-4 text-sm text-slate-600">
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                        <p class="text-[11px] uppercase tracking-widest text-slate-400">Budget</p>
+                        <p class="mt-2 text-base font-bold text-slate-800">{!! 'â‚±' !!}{{ number_format($project->budget, 2) }}</p>
+                    </div>
+                    <div class="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                        <p class="text-[11px] uppercase tracking-widest text-slate-400">Status</p>
+                        <p class="mt-2 text-base font-bold text-slate-800">{{ $project->status }}</p>
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                    <p class="text-[11px] uppercase tracking-widest text-slate-400">Description</p>
+                    <p class="mt-2 text-slate-700">{{ $project->description ?: 'No description provided.' }}</p>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-3">
+                    <div class="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                        <p class="text-[11px] uppercase tracking-widest text-slate-400">Start</p>
+                        <p class="mt-2 font-semibold text-slate-700">{{ $project->start_date?->format('M d, Y') ?? '—' }}</p>
+                    </div>
+                    <div class="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                        <p class="text-[11px] uppercase tracking-widest text-slate-400">End</p>
+                        <p class="mt-2 font-semibold text-slate-700">{{ $project->end_date?->format('M d, Y') ?? '—' }}</p>
+                    </div>
+                    <div class="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                        <p class="text-[11px] uppercase tracking-widest text-slate-400">Progress</p>
+                        <div class="mt-3 flex items-center gap-3">
+                            <div class="h-2 flex-1 rounded-full bg-slate-200">
+                                <div class="h-2 rounded-full bg-blue-600" style="width: {{ $project->progress }}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-600">{{ $project->progress }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @slot('footer')
+                <x-action-button type="button" variant="view" size="sm" @click.prevent="$dispatch('close-modal')">
+                    Close
+                </x-action-button>
+            @endslot
+        </x-modal>
+
+        @if (auth()->user()?->canWrite())
+            <x-modal name="project-edit-{{ $project->id }}" title="Edit Project" subtitle="Update details for {{ $project->name }}">
+                <form id="project-edit-form-{{ $project->id }}" action="{{ route('projects.update', $project) }}" method="POST" class="space-y-5">
+                    @csrf
+                    @method('PUT')
+                    @include('pages.projects._form-fields', ['project' => $project])
+                </form>
+
+                @slot('footer')
+                    <x-action-button type="button" variant="view" size="sm" @click.prevent="$dispatch('close-modal')">
+                        Cancel
+                    </x-action-button>
+                    <x-action-button type="submit" variant="edit" size="sm" form="project-edit-form-{{ $project->id }}">
+                        Save Changes
+                    </x-action-button>
+                @endslot
+            </x-modal>
+
+            <x-modal name="project-archive-{{ $project->id }}" title="Archive Project" subtitle="{{ $project->name }}">
+                <div class="space-y-4 text-sm text-slate-600">
+                    <p>
+                        Archiving will hide this project from active lists. You can still view archived records later.
+                    </p>
+                    <div class="rounded-xl border border-rose-100 bg-rose-50 p-4 text-rose-700">
+                        <p class="font-semibold">Are you sure you want to archive this project?</p>
+                    </div>
+                </div>
+
+                <form id="project-archive-form-{{ $project->id }}" action="{{ route('projects.destroy', $project) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                </form>
+
+                @slot('footer')
+                    <x-action-button type="button" variant="view" size="sm" @click.prevent="$dispatch('close-modal')">
+                        Cancel
+                    </x-action-button>
+                    <x-action-button type="submit" variant="archive" size="sm" form="project-archive-form-{{ $project->id }}">
+                        Archive
+                    </x-action-button>
+                @endslot
+            </x-modal>
+        @endif
+    @endforeach
 </div>
 @endsection
