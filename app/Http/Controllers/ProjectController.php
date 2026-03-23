@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agency;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,9 +14,14 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::where('agency_id', Auth::user()->agency_id)
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(10);
+        $user = Auth::user();
+        $query = Project::query()->orderBy('created_at', 'desc');
+
+        if (!$user->isAdmin()) {
+            $query->where('agency_id', $user->agency_id);
+        }
+
+        $projects = $query->paginate(10);
 
         return view('pages.projects.index', compact('projects'));
     }
@@ -43,8 +49,11 @@ class ProjectController extends Controller
             'progress' => 'nullable|integer|min:0|max:100',
         ]);
 
+        $user = Auth::user();
+        $agencyId = $user->agency_id ?? Agency::orderBy('id')->value('id');
+
         Project::create([
-            'agency_id' => Auth::user()->agency_id,
+            'agency_id' => $agencyId,
             ...$validated,
         ]);
 

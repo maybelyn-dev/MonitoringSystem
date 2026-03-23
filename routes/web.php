@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RegionalStatisticsController;
+use App\Http\Controllers\UserManagementController;
 
 // Landing/Home Route
 Route::get('/', function () {
@@ -17,9 +18,6 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-    
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
@@ -33,11 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/regional-statistics', [RegionalStatisticsController::class, 'index'])->name('regional-statistics');
 
     // Projects Routes
-    Route::resource('projects', ProjectController::class);
+    Route::resource('projects', ProjectController::class)->only(['index']);
+    Route::resource('projects', ProjectController::class)->except(['index'])->middleware('role:admin,focal');
 
     // Reports Route
     Route::get('/reports', [ReportsController::class, 'edit'])->name('reports');
-    Route::put('/reports', [ReportsController::class, 'update'])->name('reports.update');
+    Route::put('/reports', [ReportsController::class, 'update'])->name('reports.update')->middleware('role:admin,focal');
 
     // Settings Route
     Route::get('/settings', function () {
@@ -45,5 +44,10 @@ Route::middleware('auth')->group(function () {
     })->name('settings');
 });
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/users', [UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::put('/admin/users/{user}', [UserManagementController::class, 'update'])->name('admin.users.update');
+});
+
 // Agencies Route (uses existing controller)
-Route::resource('agencies', AgencyController::class);
+Route::resource('agencies', AgencyController::class)->middleware(['auth', 'role:admin']);

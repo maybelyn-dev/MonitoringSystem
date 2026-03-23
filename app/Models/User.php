@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'agency_name',
         'agency_id',
         'province_id',
     ];
@@ -47,6 +49,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_FOCAL = 'focal';
+    public const ROLE_FOCAL_VIEWER = 'focal_viewer';
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isFocal(): bool
+    {
+        return $this->role === self::ROLE_FOCAL;
+    }
+
+    public function isFocalViewer(): bool
+    {
+        return $this->role === self::ROLE_FOCAL_VIEWER;
+    }
+
+    public function canWrite(): bool
+    {
+        return $this->isAdmin() || $this->isFocal();
     }
 
     /**

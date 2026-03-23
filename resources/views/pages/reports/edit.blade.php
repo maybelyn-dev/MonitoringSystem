@@ -76,6 +76,7 @@
             </div>
         </div>
 
+        @php($canWrite = auth()->user()?->canWrite())
         <form action="{{ route('reports.update') }}" method="POST" class="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
             @csrf
             @method('PUT')
@@ -91,6 +92,7 @@
                     min="0"
                     value="{{ old('total_liabilities', $banking2020?->banking_liabilities) }}"
                     class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    @disabled(!$canWrite)
                 />
 
                 <label class="block text-[10px] font-black text-slate-600 mt-2 mb-1">Operating Income (₱B, 2019)</label>
@@ -101,6 +103,7 @@
                     min="0"
                     value="{{ old('operating_income', $income2019?->operating_income) }}"
                     class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    @disabled(!$canWrite)
                 />
             </div>
 
@@ -116,6 +119,7 @@
                             min="0"
                             value="{{ old('private_vehicles', $vehicles2022?->private_vehicles) }}"
                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            @disabled(!$canWrite)
                         />
                     </div>
 
@@ -127,6 +131,7 @@
                             min="0"
                             value="{{ old('for_hire', $vehicles2022?->for_hire) }}"
                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            @disabled(!$canWrite)
                         />
                     </div>
 
@@ -138,6 +143,7 @@
                             min="0"
                             value="{{ old('gov_t_vehicles', $vehicles2022?->government) }}"
                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            @disabled(!$canWrite)
                         />
                     </div>
 
@@ -149,15 +155,20 @@
                             min="0"
                             value="{{ old('total_vehicles', $vehicles2022?->total) }}"
                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            @disabled(!$canWrite)
                         />
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-2 flex items-center justify-end gap-2">
-                <button type="submit" class="rounded-xl bg-blue-600 text-white px-4 py-2 text-xs font-black hover:bg-blue-700 transition">
-                    Save Updates
-                </button>
+                @if ($canWrite)
+                    <button type="submit" class="rounded-xl bg-blue-600 text-white px-4 py-2 text-xs font-black hover:bg-blue-700 transition">
+                        Save Updates
+                    </button>
+                @else
+                    <span class="text-xs text-slate-400 font-bold">Read-only access</span>
+                @endif
             </div>
         </form>
     </div>

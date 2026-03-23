@@ -98,19 +98,9 @@
             </form>
 
             <!-- Divider -->
-            <div class="relative my-8">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-slate-200"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-slate-500">Don't have an account?</span>
-                </div>
+            <div class="mt-6 text-xs text-slate-500 text-center">
+                Access is managed by the system administrator. Contact your admin to request access.
             </div>
-
-            <!-- Sign Up Link -->
-            <a href="{{ route('register') }}" class="block w-full text-center bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition duration-300">
-                <i class="fas fa-user-plus mr-2"></i>Create Account
-            </a>
         </div>
 
         <!-- Footer -->

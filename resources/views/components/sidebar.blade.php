@@ -53,6 +53,16 @@
                     <span class="hidden lg:inline">Agencies</span>
                 </a>
             </li>
+            @if (auth()->user()?->isAdmin())
+            <li>
+                <a href="{{ route('admin.users.index') }}" class="flex items-center justify-center lg:justify-start px-3 lg:px-6 py-3 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors {{ request()->routeIs('admin.users.*') ? 'bg-slate-700 text-white border-l-4 border-blue-500' : '' }}">
+                    <svg class="w-5 h-5 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857M12 8a3 3 0 100-6 3 3 0 000 6zm0 0a3 3 0 100-6 3 3 0 000 6zm0 0v2m0 4h.01"></path>
+                    </svg>
+                    <span class="hidden lg:inline">User Access</span>
+                </a>
+            </li>
+            @endif
         </ul>
     </nav>
 

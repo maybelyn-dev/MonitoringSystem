@@ -9,9 +9,11 @@
                 <h1 class="text-3xl md:text-4xl font-black text-slate-900">Projects</h1>
                 <p class="text-slate-500 mt-2">Manage your agency's projects</p>
             </div>
-            <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                <i class="fas fa-plus"></i> New Project
-            </a>
+            @if (auth()->user()?->canWrite())
+                <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                    <i class="fas fa-plus"></i> New Project
+                </a>
+            @endif
         </div>
     </div>
 
@@ -55,18 +57,22 @@
                                     </span>
                                 </td>
                                 <td class="py-4 px-4">
-                                    <div class="flex gap-2">
-                                        <a href="{{ route('projects.edit', $project) }}" class="text-blue-600 hover:text-blue-700 font-bold text-xs">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <form action="{{ route('projects.destroy', $project) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-700 font-bold text-xs">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
-                                        </form>
-                                    </div>
+                                    @if (auth()->user()?->canWrite())
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('projects.edit', $project) }}" class="text-blue-600 hover:text-blue-700 font-bold text-xs">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="{{ route('projects.destroy', $project) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-700 font-bold text-xs">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @else
+                                        <span class="text-xs text-slate-400">Read-only</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -83,9 +89,11 @@
                 <i class="fas fa-inbox text-4xl text-slate-300 mb-4"></i>
                 <p class="text-slate-500 font-bold">No projects yet</p>
                 <p class="text-slate-400 text-sm mt-1">Create your first project to get started</p>
-                <a href="{{ route('projects.create') }}" class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition">
-                    Create Project
-                </a>
+                @if (auth()->user()?->canWrite())
+                    <a href="{{ route('projects.create') }}" class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition">
+                        Create Project
+                    </a>
+                @endif
             </div>
         @endif
     </div>

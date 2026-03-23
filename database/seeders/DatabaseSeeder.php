@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,23 +31,29 @@ class DatabaseSeeder extends Seeder
         // Seed agencies
         $this->call(AgencySeeder::class);
 
-        // Create test users for each agency
         User::factory()->create([
-            'name' => 'DICT Admin',
-            'email' => 'dict@example.com',
+            'name' => 'System Admin',
+            'email' => 'datamonitoring123@gmail.com',
+            'role' => 'admin',
             'agency_id' => 1,
+            'password' => Hash::make('password'),
         ]);
 
         User::factory()->create([
-            'name' => 'DOH Admin',
-            'email' => 'doh@example.com',
-            'agency_id' => 2,
+            'name' => 'DICT Focal',
+            'email' => 'dict.focal@example.com',
+            'role' => 'focal',
+            'agency_name' => 'DICT',
+            'agency_id' => 1,
+            'password' => Hash::make('password'),
         ]);
 
         User::factory()->create([
-            'name' => 'DPWH Admin',
-            'email' => 'dpwh@example.com',
-            'agency_id' => 3,
+            'name' => 'PSA Viewer',
+            'email' => 'psa.viewer@example.com',
+            'role' => 'focal_viewer',
+            'agency_id' => 1,
+            'password' => Hash::make('password'),
         ]);
     }
 }
