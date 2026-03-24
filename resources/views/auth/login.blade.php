@@ -39,26 +39,6 @@
             <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
                 @csrf
 
-                <!-- Province Selection -->
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">
-                        <i class="fas fa-building text-blue-600 mr-2"></i>Select Your Province *
-                    </label>
-                    <select id="province_id" name="province_id" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-700 font-medium transition">
-                        <option value="">-- Choose a province --</option>
-                        @forelse($provinces->unique('name') as $province)
-                            <option value="{{ $province->id }}" {{ (string) old('province_id') === (string) $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
-                        @empty
-                            <option value="" disabled>No provinces available</option>
-                        @endforelse
-                    </select>
-                </div>
-                <div id="province-loading" class="text-xs text-slate-500 mt-1">Loading provinces...</div>
-                <div id="province-error" class="text-xs text-red-600 mt-1 hidden">Could not load provinces. Using fallback list.</div>
-                    @error('province_id')
-                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-
                 <!-- Email -->
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">

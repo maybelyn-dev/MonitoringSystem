@@ -21,13 +21,13 @@ class ReportsController extends Controller
 
         $banking2020 = EconomicData::where('region_id', $region->id)
             ->whereNull('province_id')
-            ->where('data_type', 'banking')
+            ->whereIn('data_type', ['banking', 'banking_liabilities'])
             ->where('year', 2020)
             ->first();
 
         $income2019 = EconomicData::where('region_id', $region->id)
             ->whereNull('province_id')
-            ->where('data_type', 'income')
+            ->whereIn('data_type', ['income', 'operating_income'])
             ->where('year', 2019)
             ->first();
 
@@ -98,6 +98,10 @@ class ReportsController extends Controller
 
     public function update(Request $request)
     {
+        if (!$request->user()?->isAdmin()) {
+            abort(403, '403 Unauthorized: You can only modify data within your assigned province.');
+        }
+
         $region = Region::where('code', 'R3')->firstOrFail();
 
         $validated = $request->validate([
@@ -114,9 +118,10 @@ class ReportsController extends Controller
                 'region_id' => $region->id,
                 'province_id' => null,
                 'year' => 2020,
-                'data_type' => 'banking',
+                'data_type' => 'banking_liabilities',
             ],
             [
+                'total' => $validated['total_liabilities'],
                 'banking_liabilities' => $validated['total_liabilities'],
             ]
         );
@@ -126,9 +131,10 @@ class ReportsController extends Controller
                 'region_id' => $region->id,
                 'province_id' => null,
                 'year' => 2019,
-                'data_type' => 'income',
+                'data_type' => 'operating_income',
             ],
             [
+                'total' => $validated['operating_income'],
                 'operating_income' => $validated['operating_income'],
             ]
         );
@@ -141,6 +147,7 @@ class ReportsController extends Controller
             ],
             [
                 'classification' => 'total',
+                'private' => $validated['private_vehicles'],
                 'private_vehicles' => $validated['private_vehicles'],
                 'for_hire' => $validated['for_hire'],
                 'government' => $validated['gov_t_vehicles'],

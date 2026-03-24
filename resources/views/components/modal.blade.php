@@ -28,7 +28,7 @@
 >
     <div
         x-show="open"
-        class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm"
+        class="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
         x-transition:enter="ease-out duration-200"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -47,17 +47,17 @@
         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
         x-transition:leave-end="opacity-0 scale-95 translate-y-1"
     >
-        <div class="w-full {{ $maxWidthClass }} overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl" role="dialog" aria-modal="true">
-            <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-4">
+        <div class="w-full {{ $maxWidthClass }} overflow-hidden rounded-3xl border border-white/10 bg-[#111111] shadow-[0_0_30px_rgba(0,0,0,0.45)]" role="dialog" aria-modal="true">
+            <div class="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-4">
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900">{{ $title }}</h2>
+                    <h2 class="text-lg font-bold text-white">{{ $title }}</h2>
                     @if ($subtitle)
-                        <p class="mt-1 text-sm text-slate-500">{{ $subtitle }}</p>
+                        <p class="mt-1 text-sm text-slate-400">{{ $subtitle }}</p>
                     @endif
                 </div>
                 <button
                     type="button"
-                    class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                    class="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-white"
                     @click="open = false"
                 >
                     <i class="fas fa-times"></i>
@@ -69,7 +69,7 @@
             </div>
 
             @isset($footer)
-                <div class="flex items-center justify-end gap-3 border-t border-slate-100 px-6 py-4">
+                <div class="flex items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
                     {{ $footer }}
                 </div>
             @endisset

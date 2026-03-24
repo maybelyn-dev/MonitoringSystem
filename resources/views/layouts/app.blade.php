@@ -28,12 +28,12 @@
     
     @stack('styles')
 </head>
-<body class="bg-blue-50 antialiased text-slate-900">
+<body class="bg-[#050505] antialiased text-slate-100">
     <div class="flex h-screen overflow-hidden">
         
         {{-- Sidebar Section --}}
         @if(!Request::is('/'))
-            <aside class="w-20 lg:w-64 h-full m-0 shrink-0 border-r border-blue-200/40">
+            <aside class="w-20 lg:w-64 h-full m-0 shrink-0 border-r border-white/5 bg-[#050505]">
                 @include('components.sidebar')
             </aside>
         @endif
@@ -44,16 +44,16 @@
             @include('components.navbar')
 
             {{-- Main Content Area --}}
-            <main class="flex-1 overflow-y-auto bg-blue-50">
-                <div class="w-full p-8">
-                    <div class="max-w-[1400px] mx-auto">
+            <main class="flex-1 overflow-y-auto bg-[#050505]">
+                <div class="w-full p-6 md:p-8">
+                    <div class="max-w-[1500px] mx-auto">
                         @yield('content')
                     </div>
                 </div>
             </main>
 
             {{-- Footer (Optional) --}}
-            <footer class="bg-white border-t border-blue-200/60 p-3 text-center text-[10px] text-blue-400">
+            <footer class="bg-[#050505] border-t border-white/5 p-3 text-center text-[10px] text-slate-500">
                 &copy; {{ date('Y') }} RAMS Region III &bull; Project Monitoring System
             </footer>
         </div>

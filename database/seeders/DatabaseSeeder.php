@@ -16,26 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed regions and provinces first
-        $this->call(RegionSeeder::class);
-        
-        // Seed economic data
-        $this->call(EconomicDataSeeder::class);
-        
-        // Seed vehicle registration data
-        $this->call(VehicleRegistrationSeeder::class);
-
-        // Seed regional statistics dashboard data
-        $this->call(RegionalStatisticsSeeder::class);
-
-        // Seed agencies
-        $this->call(AgencySeeder::class);
-
         User::factory()->create([
             'name' => 'System Admin',
             'email' => 'datamonitoring123@gmail.com',
             'role' => 'admin',
-            'agency_id' => 1,
             'password' => Hash::make('password'),
         ]);
 
@@ -44,7 +28,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'dict.focal@example.com',
             'role' => 'focal',
             'agency_name' => 'DICT',
-            'agency_id' => 1,
             'password' => Hash::make('password'),
         ]);
 
@@ -52,7 +35,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'PSA Viewer',
             'email' => 'psa.viewer@example.com',
             'role' => 'focal_viewer',
-            'agency_id' => 1,
             'password' => Hash::make('password'),
         ]);
     }

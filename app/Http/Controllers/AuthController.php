@@ -16,22 +16,7 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        $provinceNames = [
-            'Aurora',
-            'Bataan',
-            'Bulacan',
-            'Nueva Ecija',
-            'Pampanga',
-            'Tarlac',
-            'Zambales',
-        ];
-        $provinces = Province::whereIn('name', $provinceNames)
-            ->whereHas('region', function ($query) {
-                $query->where('code', 'R3');
-            })
-            ->orderBy('name', 'asc')
-            ->get();
-        return view('auth.login', compact('provinces'));
+        return view('auth.login');
     }
 
     /**
@@ -42,40 +27,38 @@ class AuthController extends Controller
         $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
-            'province_id' => 'required|exists:provinces,id',
         ]);
 
         $user = User::where('email', $validated['email'])->first();
 
-        if ($user && Hash::check($validated['password'], $user->password)) {
+        $passwordMatches = false;
+        if ($user) {
+            try {
+                $passwordMatches = Hash::check($validated['password'], $user->password);
+            } catch (\Throwable $e) {
+                $passwordMatches = false;
+            }
+
+            // Temporary fallback for legacy/plain-text passwords (rehash on successful match).
+            if (!$passwordMatches && hash_equals((string) $user->password, (string) $validated['password'])) {
+                $passwordMatches = true;
+                $user->password = Hash::make($validated['password']);
+            }
+        }
+
+        if ($user && $passwordMatches) {
             if (strtolower($user->email) === 'datamonitoring123@gmail.com') {
                 $user->role = User::ROLE_ADMIN;
-                if (!$user->agency_id) {
-                    $user->agency_id = Agency::orderBy('id')->value('id');
-                }
             }
-            // Persist province selection as the user's current monitoring scope.
-            $user->province_id = (int) $validated['province_id'];
-            if (!$user->agency_id) {
-                $province = Province::find($validated['province_id']);
-                $agency = Agency::where('province', $province?->name)->orderBy('id')->first();
-                if (!$agency && $province) {
-                    $agency = Agency::create([
-                        'agency_name' => $province->name . ' - Region III Monitoring',
-                        'province' => $province->name,
-                        'address' => $province->name . ', Region III',
-                        'contact' => 'N/A',
-                    ]);
-                }
-                $user->agency_id = $agency?->id;
-            }
+
             $user->save();
 
             Auth::login($user);
+            $request->session()->put('role', $user->role);
             return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials for this province.']);
+        return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
     /**

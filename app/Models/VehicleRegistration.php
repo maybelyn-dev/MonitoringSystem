@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VehicleRegistration extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'region_id',
         'province_id',
+        'province',
         'year',
         'classification',
+        'private',
         'private_vehicles',
         'for_hire',
         'government',
@@ -21,6 +25,7 @@ class VehicleRegistration extends Model
     ];
 
     protected $casts = [
+        'private' => 'integer',
         'private_vehicles' => 'integer',
         'for_hire' => 'integer',
         'government' => 'integer',

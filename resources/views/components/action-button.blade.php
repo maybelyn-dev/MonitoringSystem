@@ -7,7 +7,7 @@
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+    $baseClasses = 'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-[#050505]';
     $sizeClasses = match ($size) {
         'xs' => 'text-[11px] px-2.5 py-1.5',
         'sm' => 'text-xs px-3 py-2',
@@ -16,12 +16,12 @@
         default => 'text-xs px-3 py-2',
     };
     $variantClasses = match ($variant) {
-        'create' => 'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-300 shadow-sm shadow-emerald-200',
-        'view' => 'bg-slate-100 text-slate-700 hover:bg-slate-200 focus-visible:ring-slate-300',
-        'edit' => 'bg-amber-500 text-white hover:bg-amber-600 focus-visible:ring-amber-300 shadow-sm shadow-amber-200',
-        'archive' => 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-300 shadow-sm shadow-rose-200',
-        'ghost' => 'bg-transparent text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-200',
-        default => 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-300 shadow-sm shadow-blue-200',
+        'create' => 'bg-gradient-to-r from-[#00FFA3] to-[#00D1FF] text-[#050505] hover:from-[#00FFB2] hover:to-[#36D7FF] focus-visible:ring-[#00FFA3]/60 shadow-[0_0_18px_rgba(0,255,163,0.35)]',
+        'view' => 'bg-[#111111] text-slate-200 border border-white/10 hover:border-[#00FFA3]/40 hover:text-white focus-visible:ring-[#00FFA3]/40',
+        'edit' => 'bg-[#111111] text-[#00D1FF] border border-[#00D1FF]/40 hover:border-[#00D1FF]/70 focus-visible:ring-[#00D1FF]/50 shadow-[0_0_14px_rgba(0,209,255,0.25)]',
+        'archive' => 'bg-[#111111] text-rose-300 border border-rose-400/40 hover:border-rose-300/70 focus-visible:ring-rose-400/40 shadow-[0_0_14px_rgba(248,113,113,0.25)]',
+        'ghost' => 'bg-transparent text-slate-400 hover:text-white hover:bg-white/5 focus-visible:ring-white/10',
+        default => 'bg-gradient-to-r from-[#00FFA3] to-[#7C5CFF] text-[#050505] hover:from-[#00FFB2] hover:to-[#8A6BFF] focus-visible:ring-[#00FFA3]/60 shadow-[0_0_18px_rgba(0,255,163,0.35)]',
     };
     $classes = trim($baseClasses . ' ' . $sizeClasses . ' ' . $variantClasses);
 @endphp

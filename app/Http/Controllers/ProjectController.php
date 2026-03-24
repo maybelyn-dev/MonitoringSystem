@@ -14,13 +14,9 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $query = Project::query()->orderBy('created_at', 'desc');
-
-        if (!$user->isAdmin()) {
-            $query->where('agency_id', $user->agency_id);
-        }
-
+        $query = Project::query()
+            ->with('agency')
+            ->orderBy('created_at', 'desc');
         $projects = $query->paginate(10);
 
         return view('pages.projects.index', compact('projects'));
@@ -31,7 +27,9 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('pages.projects.create');
+        return redirect()
+            ->route('projects.index')
+            ->with('open_modal', 'project-create');
     }
 
     /**
@@ -66,7 +64,9 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $this->authorize('update', $project);
-        return view('pages.projects.edit', compact('project'));
+        return redirect()
+            ->route('projects.index')
+            ->with('open_modal', "project-edit-{$project->id}");
     }
 
     /**
