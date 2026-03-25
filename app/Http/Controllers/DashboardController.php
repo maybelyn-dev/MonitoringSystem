@@ -235,7 +235,7 @@ class DashboardController extends Controller
         if ($selectedProvinceId) {
             $vehicleByProvinceQuery->where('province_id', $selectedProvinceId);
         }
-        $vehicleByProvince = $vehicleByProvinceQuery->get()->keyBy(fn ($row) => $row->province?->name);
+        $vehicleByProvince = $vehicleByProvinceQuery->get()->keyBy(fn ($row) => $row->province?->name ?? $row->province);
 
         $vehicleChartLabels = collect();
         $vehicleChartPrivate = collect();

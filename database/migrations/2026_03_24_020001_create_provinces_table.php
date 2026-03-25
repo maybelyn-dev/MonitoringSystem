@@ -12,17 +12,18 @@ return new class extends Migration
         Schema::create('provinces', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->string('code')->unique();
             $table->timestamps();
         });
 
         DB::table('provinces')->insert([
-            ['name' => 'Aurora', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Bataan', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Bulacan', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Nueva Ecija', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Pampanga', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Tarlac', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Zambales', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Aurora', 'code' => 'AUR', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Bataan', 'code' => 'BAT', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Bulacan', 'code' => 'BUL', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Nueva Ecija', 'code' => 'NEC', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Pampanga', 'code' => 'PAM', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Tarlac', 'code' => 'TAR', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Zambales', 'code' => 'ZAM', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 

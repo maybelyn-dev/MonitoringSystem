@@ -42,6 +42,7 @@ class EconomicDataSeeder extends Seeder
                     'data_type' => 'banking',
                 ],
                 [
+                    'province' => '',
                     'banking_liabilities' => $data['banking_liabilities'],
                     'universal_banks' => $data['universal_banks'],
                     'thrift_banks' => $data['thrift_banks'],
@@ -73,6 +74,7 @@ class EconomicDataSeeder extends Seeder
                     'data_type' => 'income',
                 ],
                 [
+                    'province' => '',
                     'operating_income' => $data['operating_income'],
                 ]
             );

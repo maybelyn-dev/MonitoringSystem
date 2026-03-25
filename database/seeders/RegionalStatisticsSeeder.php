@@ -41,8 +41,8 @@ class RegionalStatisticsSeeder extends Seeder
         $provinces = [];
         foreach ($provinceCatalog as $name => $code) {
             $provinces[$name] = Province::updateOrCreate(
-                ['name' => $name, 'region_id' => $region->id],
-                ['code' => $code]
+                ['name' => $name],
+                ['region_id' => $region->id, 'code' => $code]
             );
         }
 
