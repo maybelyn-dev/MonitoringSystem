@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,38 +16,53 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed regions and provinces first
+        // Ensure region + provinces exist before dashboard queries run
         $this->call(RegionSeeder::class);
-        
-        // Seed economic data
-        $this->call(EconomicDataSeeder::class);
-        
-        // Seed vehicle registration data
-        $this->call(VehicleRegistrationSeeder::class);
 
-        // Seed regional statistics dashboard data
+        // 1) Admin user
+        User::updateOrCreate([
+            'email' => 'datamonitoring123@gmail.com',
+        ],[
+            'name' => 'Admin User',
+            'role' => 'admin',
+            'password' => Hash::make('password123'),
+        ]);
+
+        // 2) Additional sample users (optional, kept for development)
+        User::updateOrCreate([
+            'email' => 'dict.focal@example.com',
+        ],[
+            'name' => 'DICT Focal',
+            'role' => 'focal',
+            'agency_name' => 'DICT',
+            'password' => Hash::make('password'),
+        ]);
+
+        User::updateOrCreate([
+            'email' => 'psa.viewer@example.com',
+        ],[
+            'name' => 'PSA Viewer',
+            'role' => 'focal_viewer',
+            'password' => Hash::make('password'),
+        ]);
+
+        // 3) Agency records
+        $agencyNames = [
+            'Department of Health',
+            'Department of Education',
+            'Department of Agriculture',
+            'Department of Public Works and Highways',
+            'Department of Social Welfare and Development',
+        ];
+
+        foreach ($agencyNames as $agencyName) {
+            \App\Models\Agency::updateOrCreate(
+                ['agency_name' => $agencyName],
+                ['province' => null, 'address' => null, 'contact' => null]
+            );
+        }
+
+        // 4) Regional statistics (includes categories)
         $this->call(RegionalStatisticsSeeder::class);
-
-        // Seed agencies
-        $this->call(AgencySeeder::class);
-
-        // Create test users for each agency
-        User::factory()->create([
-            'name' => 'DICT Admin',
-            'email' => 'dict@example.com',
-            'agency_id' => 1,
-        ]);
-
-        User::factory()->create([
-            'name' => 'DOH Admin',
-            'email' => 'doh@example.com',
-            'agency_id' => 2,
-        ]);
-
-        User::factory()->create([
-            'name' => 'DPWH Admin',
-            'email' => 'dpwh@example.com',
-            'agency_id' => 3,
-        ]);
     }
 }

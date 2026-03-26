@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agency;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,9 +14,10 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::where('agency_id', Auth::user()->agency_id)
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(10);
+        $query = Project::query()
+            ->with('agency')
+            ->orderBy('created_at', 'desc');
+        $projects = $query->paginate(10);
 
         return view('pages.projects.index', compact('projects'));
     }
@@ -25,7 +27,9 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('pages.projects.create');
+        return redirect()
+            ->route('projects.index')
+            ->with('open_modal', 'project-create');
     }
 
     /**
@@ -43,8 +47,11 @@ class ProjectController extends Controller
             'progress' => 'nullable|integer|min:0|max:100',
         ]);
 
+        $user = Auth::user();
+        $agencyId = $user->agency_id ?? Agency::orderBy('id')->value('id');
+
         Project::create([
-            'agency_id' => Auth::user()->agency_id,
+            'agency_id' => $agencyId,
             ...$validated,
         ]);
 
@@ -57,7 +64,18 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $this->authorize('update', $project);
-        return view('pages.projects.edit', compact('project'));
+        return redirect()
+            ->route('projects.index')
+            ->with('open_modal', "project-edit-{$project->id}");
+    }
+
+    /**
+     * Display the specified project
+     */
+    public function show(Project $project)
+    {
+        $this->authorize('view', $project);
+        return view('pages.projects.show', compact('project'));
     }
 
     /**
@@ -90,6 +108,6 @@ class ProjectController extends Controller
         $this->authorize('delete', $project);
         $project->delete();
 
-        return redirect()->route('projects.index')->with('success', 'Project deleted successfully!');
+        return redirect()->route('projects.index')->with('success', 'Project archived successfully!');
     }
 }

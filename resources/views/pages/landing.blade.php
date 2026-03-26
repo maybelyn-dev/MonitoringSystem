@@ -63,9 +63,9 @@
                     <a href="{{ route('login') }}" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 text-center">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" class="bg-white text-blue-600 px-8 py-3 rounded-xl font-bold border-2 border-blue-600 hover:bg-blue-50 transition text-center">
-                        Get Started
-                    </a>
+                    <div class="bg-white text-blue-600 px-8 py-3 rounded-xl font-bold border-2 border-blue-600 text-center">
+                        Access via Admin
+                    </div>
                 </div>
             </div>
         </div>

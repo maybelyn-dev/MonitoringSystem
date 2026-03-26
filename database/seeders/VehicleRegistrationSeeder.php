@@ -62,6 +62,7 @@ class VehicleRegistrationSeeder extends Seeder
                         'year' => 2022,
                     ],
                     [
+                        'province' => $data['province'],
                         'classification' => 'total',
                         'private_vehicles' => $data['private'],
                         'for_hire' => $data['for_hire'],
@@ -82,6 +83,7 @@ class VehicleRegistrationSeeder extends Seeder
                 'year' => 2022,
             ],
             [
+                'province' => null,
                 'classification' => 'total',
                 'private_vehicles' => 1317120,
                 'for_hire' => 103799,

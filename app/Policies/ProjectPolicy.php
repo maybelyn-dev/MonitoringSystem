@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
 {
@@ -12,22 +13,40 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return $user->agency_id === $project->agency_id;
+        return true;
     }
 
     /**
      * Determine if the user can update the project
      */
-    public function update(User $user, Project $project): bool
+    public function update(User $user, Project $project): Response|bool
     {
-        return $user->agency_id === $project->agency_id;
+        if ($user->isAdmin()) {
+            return Response::allow();
+        }
+        if ($user->isFocalViewer()) {
+            return Response::deny('403 Unauthorized: You can only modify data within your assigned province.');
+        }
+        if ($user->canManageProvinceName($project->agency?->province)) {
+            return Response::allow();
+        }
+        return Response::deny('403 Unauthorized: You can only modify data within your assigned province.');
     }
 
     /**
      * Determine if the user can delete the project
      */
-    public function delete(User $user, Project $project): bool
+    public function delete(User $user, Project $project): Response|bool
     {
-        return $user->agency_id === $project->agency_id;
+        if ($user->isAdmin()) {
+            return Response::allow();
+        }
+        if ($user->isFocalViewer()) {
+            return Response::deny('403 Unauthorized: You can only modify data within your assigned province.');
+        }
+        if ($user->canManageProvinceName($project->agency?->province)) {
+            return Response::allow();
+        }
+        return Response::deny('403 Unauthorized: You can only modify data within your assigned province.');
     }
 }

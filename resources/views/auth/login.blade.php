@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Region 3 Monitoring Portal</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="app-base-url" content="{{ url('/') }}">
     @vite('resources/css/app.css')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -35,24 +38,6 @@
 
             <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
                 @csrf
-
-                <!-- Province Selection -->
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">
-                        <i class="fas fa-building text-blue-600 mr-2"></i>Select Your Province *
-                    </label>
-                    <select name="province_id" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-700 font-medium transition">
-                        <option value="">-- Choose a province --</option>
-                        @forelse($provinces->unique('name') as $province)
-                            <option value="{{ $province->id }}" {{ (string) old('province_id') === (string) $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
-                        @empty
-                            <option value="" disabled>No provinces available</option>
-                        @endforelse
-                    </select>
-                    @error('province_id')
-                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
 
                 <!-- Email -->
                 <div>
@@ -93,19 +78,9 @@
             </form>
 
             <!-- Divider -->
-            <div class="relative my-8">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-slate-200"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-slate-500">Don't have an account?</span>
-                </div>
+            <div class="mt-6 text-xs text-slate-500 text-center">
+                Access is managed by the system administrator. Contact your admin to request access.
             </div>
-
-            <!-- Sign Up Link -->
-            <a href="{{ route('register') }}" class="block w-full text-center bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition duration-300">
-                <i class="fas fa-user-plus mr-2"></i>Create Account
-            </a>
         </div>
 
         <!-- Footer -->

@@ -20,6 +20,12 @@ class AgencySeeder extends Seeder
                 'contact' => '(044) 123-4567',
             ],
             [
+                'agency_name' => 'PSA Region III',
+                'province' => 'Bulacan',
+                'address' => 'PSA Office, Region III',
+                'contact' => '(044) 000-0000',
+            ],
+            [
                 'agency_name' => 'DOH Region III',
                 'province' => 'Nueva Ecija',
                 'address' => '456 Health St, Cabanatuan, Nueva Ecija',

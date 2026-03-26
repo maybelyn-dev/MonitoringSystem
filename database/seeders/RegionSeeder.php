@@ -13,10 +13,11 @@ class RegionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Region III
-        $region = Region::create([
-            'name' => 'Region III - Central Luzon',
+        // Create or update Region III
+        $region = Region::updateOrCreate([
             'code' => 'R3',
+        ],[
+            'name' => 'Region III - Central Luzon',
             'description' => 'Regional monitoring system for Central Luzon provinces',
         ]);
 
@@ -27,16 +28,15 @@ class RegionSeeder extends Seeder
             ['name' => 'Bulacan', 'code' => 'BUL'],
             ['name' => 'Nueva Ecija', 'code' => 'NEC'],
             ['name' => 'Pampanga', 'code' => 'PAM'],
-            ['name' => 'Quezon', 'code' => 'QUE'],
             ['name' => 'Tarlac', 'code' => 'TAR'],
+            ['name' => 'Zambales', 'code' => 'ZAM'],
         ];
 
         foreach ($provinces as $province) {
-            Province::create([
-                'region_id' => $region->id,
-                'name' => $province['name'],
-                'code' => $province['code'],
-            ]);
+            Province::firstOrCreate(
+                ['name' => $province['name']],
+                ['region_id' => $region->id, 'code' => $province['code']]
+            );
         }
     }
 }
