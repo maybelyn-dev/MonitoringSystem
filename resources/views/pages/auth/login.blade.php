@@ -36,6 +36,27 @@
             <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
                 @csrf
 
+<<<<<<< HEAD
+=======
+                <!-- Province Selection -->
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">
+                        <i class="fas fa-building text-blue-600 mr-2"></i>Select Your Province *
+                    </label>
+                    <select name="province_id" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700">
+                        <option value="">-- Choose a province --</option>
+                        @forelse($provinces->unique('name') as $province)
+                            <option value="{{ $province->id }}" {{ (string) old('province_id') === (string) $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
+                        @empty
+                            <option value="" disabled>No provinces available</option>
+                        @endforelse
+                    </select>
+                    @error('province_id')
+                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+>>>>>>> cf987bb09545d4af71f7cee8ba04d0b7d536a31c
                 <!-- Email -->
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Email Address</label>

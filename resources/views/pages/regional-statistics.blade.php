@@ -3,34 +3,51 @@
 @section('title', 'Province Monitoring Dashboard')
 
 @section('content')
-<div class="max-w-6xl mx-auto px-4 py-6 space-y-4">
-    <div class="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
+<div class="max-w-5xl mx-auto px-3 py-4 space-y-3">
+    <div class="bg-white border border-blue-100 rounded-xl p-3 shadow-sm">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
+<<<<<<< HEAD
                 <p class="text-[11px] uppercase tracking-[0.2em] text-blue-600 font-semibold">
                     {{ $isPublic ? 'Public Viewing Mode' : 'Region III Monitoring System' }}
                 </p>
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Province Dashboard</h1>
                 <p class="text-xs text-slate-500 mt-1">
                     Province: <span class="font-semibold text-slate-700">{{ $selectedProvince ?? 'Region III (Global)' }}</span>
+=======
+                <p class="text-[11px] uppercase tracking-[0.2em] text-blue-600 font-semibold">Region III Monitoring System</p>
+                <h1 class="text-lg sm:text-xl font-bold text-slate-900">Province Dashboard</h1>
+                <p class="text-[11px] text-slate-500 mt-1">
+                    Province: <span class="font-semibold text-slate-700">{{ $selectedProvince ?? 'Not set' }}</span>
+>>>>>>> cf987bb09545d4af71f7cee8ba04d0b7d536a31c
                 </p>
             </div>
-            <div class="text-xs text-slate-500">
-                Total Records: <span class="font-semibold text-slate-700">{{ $stats->count() }}</span>
+            <div class="text-[11px] text-slate-500">
+                {{ $totalRecordsLabel ?? 'Total Records' }}:
+                <span class="font-semibold text-slate-700">{{ $totalRecordsValue ?? $stats->count() }}</span>
             </div>
+        </div>
+        <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '13.1']) }}"
+               class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '13.1' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
+                Motor Vehicles
+            </a>
+            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.2']) }}"
+               class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '16.2' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
+                Banking Deposits
+            </a>
+            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.3']) }}"
+               class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '16.3' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
+                Banking Income
+            </a>
         </div>
     </div>
 
-    @if($isEmpty)
-        <div class="rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
-            No records found for this province. Please verify the province selection and re-run the seeder if needed.
-        </div>
-    @else
-        <div class="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-            <div class="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-3">Province Snapshot</div>
+    <div class="rounded-lg border border-blue-100 bg-white p-3 shadow-sm">
+            <div class="text-[11px] font-semibold uppercase tracking-widest text-blue-600 mb-2">Province Snapshot</div>
             <div class="overflow-auto">
-                <table class="min-w-full text-xs text-slate-700">
-                    <thead class="text-[11px] uppercase tracking-widest text-blue-500 border-b border-blue-50">
+                <table class="min-w-full text-[11px] text-slate-700">
+                    <thead class="text-[10px] uppercase tracking-widest text-blue-500 border-b border-blue-50">
                         <tr>
                             <th class="text-left py-2 pr-3 font-semibold">Province</th>
                             <th class="text-right py-2 pr-3 font-semibold">Banking Total</th>
@@ -67,23 +84,26 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+    </div>
 
-        <div class="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+    <div class="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
             <div class="flex items-center justify-between mb-2">
                 <div>
-                    <p class="text-[11px] uppercase tracking-widest text-blue-600 font-semibold">Vehicles</p>
-                    <h2 class="text-sm font-bold text-slate-900">Private vs For Hire Comparison</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-blue-600 font-semibold">
+                        {{ ($selectedTable ?? '13.1') === '13.1' ? 'Vehicles' : 'Banking' }}
+                    </p>
+                    <h2 class="text-[13px] font-bold text-slate-900">
+                        {{ ($selectedTable ?? '13.1') === '13.1' ? 'Private vs For Hire Comparison' : 'Institution Type Breakdown' }}
+                    </h2>
                 </div>
-                <div class="text-[11px] text-slate-500">
+                <div class="text-[10px] text-slate-500">
                     Year: <span class="font-semibold text-slate-700">{{ $latestVehicleYear ?? 'N/A' }}</span>
                 </div>
             </div>
-            <div class="h-[220px]">
+            <div class="h-[190px]">
                 <canvas id="provinceVehicleChart"></canvas>
             </div>
-        </div>
-    @endif
+    </div>
 </div>
 @endsection
 
@@ -92,15 +112,16 @@
     const labels = @json($chartLabels);
     const values = @json($chartValues);
     const peso = '{!! '₱' !!}';
+    const selectedTable = @json($selectedTable ?? '13.1');
 
     const ctx = document.getElementById('provinceVehicleChart');
-    if (ctx && labels.length) {
+    if (ctx) {
         new Chart(ctx, {
             type: 'bar',
             data: {
                 labels,
                 datasets: [{
-                    label: 'Vehicles',
+                    label: selectedTable === '13.1' ? 'Vehicles' : 'Banking',
                     data: values,
                     backgroundColor: ['#1D4ED8', '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE'],
                     borderColor: ['#1D4ED8', '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE'],
@@ -128,7 +149,7 @@
                     y: {
                         type: 'linear',
                         min: 0,
-                        max: 350000,
+                        max: selectedTable === '13.1' ? 350000 : undefined,
                         ticks: {
                             color: '#64748b',
                             font: { size: 10 },
