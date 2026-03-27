@@ -9,13 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Province extends Model
 {
     protected $fillable = [
+        'region_id',
         'name',
-<<<<<<< HEAD
         'code',
         'data_status',
-=======
-        'region_id',
->>>>>>> cf987bb09545d4af71f7cee8ba04d0b7d536a31c
     ];
 
     /**

@@ -7,19 +7,12 @@
     <div class="bg-white border border-blue-100 rounded-xl p-3 shadow-sm">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-<<<<<<< HEAD
                 <p class="text-[11px] uppercase tracking-[0.2em] text-blue-600 font-semibold">
                     {{ $isPublic ? 'Public Viewing Mode' : 'Region III Monitoring System' }}
                 </p>
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Province Dashboard</h1>
                 <p class="text-xs text-slate-500 mt-1">
                     Province: <span class="font-semibold text-slate-700">{{ $selectedProvince ?? 'Region III (Global)' }}</span>
-=======
-                <p class="text-[11px] uppercase tracking-[0.2em] text-blue-600 font-semibold">Region III Monitoring System</p>
-                <h1 class="text-lg sm:text-xl font-bold text-slate-900">Province Dashboard</h1>
-                <p class="text-[11px] text-slate-500 mt-1">
-                    Province: <span class="font-semibold text-slate-700">{{ $selectedProvince ?? 'Not set' }}</span>
->>>>>>> cf987bb09545d4af71f7cee8ba04d0b7d536a31c
                 </p>
             </div>
             <div class="text-[11px] text-slate-500">
