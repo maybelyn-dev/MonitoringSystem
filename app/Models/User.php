@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'agency_id',
         'province_id',
     ];
@@ -47,6 +48,16 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->email === 'datamonitoring123@gmail.com' || $this->role === 'admin';
+    }
+
+    public function isAgencyUser(): bool
+    {
+        return $this->role === 'agency';
     }
 
     /**

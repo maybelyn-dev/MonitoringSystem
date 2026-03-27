@@ -13,9 +13,13 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::where('agency_id', Auth::user()->agency_id)
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(10);
+        $user = Auth::user();
+        $projects = Project::query()
+            ->when(!$user->isSuperAdmin(), function ($query) use ($user) {
+                $query->where('agency_id', $user->agency_id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('pages.projects.index', compact('projects'));
     }
@@ -25,6 +29,10 @@ class ProjectController extends Controller
      */
     public function create()
     {
+        if (Auth::user()->isSuperAdmin()) {
+            abort(403, 'Super Admin accounts cannot create new projects.');
+        }
+
         return view('pages.projects.create');
     }
 
@@ -33,6 +41,10 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        if (Auth::user()->isSuperAdmin()) {
+            abort(403, 'Super Admin accounts cannot create new projects.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -90,6 +102,6 @@ class ProjectController extends Controller
         $this->authorize('delete', $project);
         $project->delete();
 
-        return redirect()->route('projects.index')->with('success', 'Project deleted successfully!');
+        return redirect()->route('projects.index')->with('success', 'Project archived successfully!');
     }
 }

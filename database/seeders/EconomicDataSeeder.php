@@ -52,16 +52,16 @@ class EconomicDataSeeder extends Seeder
 
         // Operating Income Data (2010-2019) - in billions
         $incomeData = [
-            ['year' => 2010, 'operating_income' => 6.2],
-            ['year' => 2011, 'operating_income' => 8.5],
-            ['year' => 2012, 'operating_income' => 6.6],
-            ['year' => 2013, 'operating_income' => 11.4],
-            ['year' => 2014, 'operating_income' => 9.8],
-            ['year' => 2015, 'operating_income' => 11.8],
-            ['year' => 2016, 'operating_income' => 13.9],
-            ['year' => 2017, 'operating_income' => 13.3],
-            ['year' => 2018, 'operating_income' => 16.2],
-            ['year' => 2019, 'operating_income' => 16.3],
+            ['year' => 2010, 'operating_income' => 6.2, 'universal_banks' => 1.1, 'thrift_banks' => 1.6, 'rural_banks' => 3.4],
+            ['year' => 2011, 'operating_income' => 8.5, 'universal_banks' => 3.1, 'thrift_banks' => 1.9, 'rural_banks' => 3.5],
+            ['year' => 2012, 'operating_income' => 6.6, 'universal_banks' => 1.5, 'thrift_banks' => 1.8, 'rural_banks' => 3.3],
+            ['year' => 2013, 'operating_income' => 11.4, 'universal_banks' => 6.4, 'thrift_banks' => 1.9, 'rural_banks' => 3.2],
+            ['year' => 2014, 'operating_income' => 9.8, 'universal_banks' => 4.1, 'thrift_banks' => 2.4, 'rural_banks' => 3.4],
+            ['year' => 2015, 'operating_income' => 11.8, 'universal_banks' => 5.6, 'thrift_banks' => 3.0, 'rural_banks' => 3.3],
+            ['year' => 2016, 'operating_income' => 13.9, 'universal_banks' => 6.3, 'thrift_banks' => 3.9, 'rural_banks' => 3.7],
+            ['year' => 2017, 'operating_income' => 13.3, 'universal_banks' => 5.3, 'thrift_banks' => 4.2, 'rural_banks' => 3.8],
+            ['year' => 2018, 'operating_income' => 16.2, 'universal_banks' => 8.2, 'thrift_banks' => 4.0, 'rural_banks' => 4.0],
+            ['year' => 2019, 'operating_income' => 16.3, 'universal_banks' => 8.4, 'thrift_banks' => 3.7, 'rural_banks' => 4.2],
         ];
 
         foreach ($incomeData as $data) {
@@ -74,6 +74,9 @@ class EconomicDataSeeder extends Seeder
                 ],
                 [
                     'operating_income' => $data['operating_income'],
+                    'universal_banks' => $data['universal_banks'],
+                    'thrift_banks' => $data['thrift_banks'],
+                    'rural_banks' => $data['rural_banks'],
                 ]
             );
         }

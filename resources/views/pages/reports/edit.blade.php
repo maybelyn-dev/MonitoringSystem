@@ -32,7 +32,16 @@
             @method('PUT')
 
             <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Banking (2020)</p>
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black">Banking</p>
+                    <select name="banking_year" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600">
+                        @foreach(range(2011, 2020) as $year)
+                            <option value="{{ $year }}" {{ (int) old('banking_year', $bankingYear ?? 2020) === (int) $year ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <label class="block text-[10px] font-black text-slate-600 mb-1">Total Liabilities (₱B)</label>
                 <input
@@ -44,7 +53,16 @@
                     class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
 
-                <label class="block text-[10px] font-black text-slate-600 mt-2 mb-1">Operating Income (₱B, 2019)</label>
+                <div class="mt-2 flex items-center justify-between">
+                    <label class="block text-[10px] font-black text-slate-600">Operating Income (₱B)</label>
+                    <select name="income_year" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600">
+                        @foreach(range(2010, 2019) as $year)
+                            <option value="{{ $year }}" {{ (int) old('income_year', $incomeYear ?? 2019) === (int) $year ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <input
                     name="operating_income"
                     type="number"
@@ -56,7 +74,16 @@
             </div>
 
             <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Vehicles (2022)</p>
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black">Vehicles</p>
+                    <select name="vehicles_year" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600">
+                        @foreach(range(2018, 2022) as $year)
+                            <option value="{{ $year }}" {{ (int) old('vehicles_year', $vehiclesYear ?? 2022) === (int) $year ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div>
@@ -114,4 +141,3 @@
     </div>
 </div>
 @endsection
-

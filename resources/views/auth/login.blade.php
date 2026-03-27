@@ -36,22 +36,6 @@
             <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
                 @csrf
 
-                <!-- Province Selection -->
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">
-                        <i class="fas fa-building text-blue-600 mr-2"></i>Select Your Province *
-                    </label>
-                    <select name="province_id" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-700 font-medium transition">
-                        <option value="">-- Choose a province --</option>
-                        @foreach($provinces as $province)
-                            <option value="{{ $province->id }}" {{ (string) old('province_id') === (string) $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('province_id')
-                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
                 <!-- Email -->
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">
@@ -96,13 +80,13 @@
                     <div class="w-full border-t border-slate-200"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white text-slate-500">Don't have an account?</span>
+                    <span class="px-2 bg-white text-slate-500">Need access?</span>
                 </div>
             </div>
 
-            <!-- Sign Up Link -->
-            <a href="{{ route('register') }}" class="block w-full text-center bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition duration-300">
-                <i class="fas fa-user-plus mr-2"></i>Create Account
+            <!-- Access Request Link -->
+            <a href="{{ route('access.request') }}" class="block w-full text-center bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition duration-300">
+                <i class="fas fa-paper-plane mr-2"></i>Request New Access
             </a>
         </div>
 

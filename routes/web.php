@@ -13,13 +13,16 @@ Route::get('/', function () {
     return view('pages.landing');
 })->name('landing');
 
+Route::get('/access', function () {
+    return view('pages.access-request');
+})->name('access.request');
+
+Route::get('/stats', [RegionalStatisticsController::class, 'publicIndex'])->name('stats.public');
+
 // Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-    
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
@@ -28,6 +31,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware('auth')->group(function () {
     // Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/province/select', [DashboardController::class, 'selectProvince'])->name('province.select');
 
     // Regional Statistics Dashboard
     Route::get('/regional-statistics', [RegionalStatisticsController::class, 'index'])->name('regional-statistics');

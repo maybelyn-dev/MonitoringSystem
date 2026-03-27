@@ -22,13 +22,13 @@ class RegionSeeder extends Seeder
 
         // Create provinces
         $provinces = [
-            ['name' => 'Aurora', 'code' => 'AUR'],
-            ['name' => 'Bataan', 'code' => 'BAT'],
-            ['name' => 'Bulacan', 'code' => 'BUL'],
-            ['name' => 'Nueva Ecija', 'code' => 'NEC'],
-            ['name' => 'Pampanga', 'code' => 'PAM'],
-            ['name' => 'Quezon', 'code' => 'QUE'],
-            ['name' => 'Tarlac', 'code' => 'TAR'],
+            ['name' => 'Aurora', 'code' => 'AUR', 'data_status' => 'active'],
+            ['name' => 'Bataan', 'code' => 'BAT', 'data_status' => 'active'],
+            ['name' => 'Bulacan', 'code' => 'BUL', 'data_status' => 'active'],
+            ['name' => 'Nueva Ecija', 'code' => 'NEC', 'data_status' => 'pending'],
+            ['name' => 'Pampanga', 'code' => 'PAM', 'data_status' => 'pending'],
+            ['name' => 'Tarlac', 'code' => 'TAR', 'data_status' => 'pending'],
+            ['name' => 'Zambales', 'code' => 'ZAM', 'data_status' => 'pending'],
         ];
 
         foreach ($provinces as $province) {
@@ -36,6 +36,7 @@ class RegionSeeder extends Seeder
                 'region_id' => $region->id,
                 'name' => $province['name'],
                 'code' => $province['code'],
+                'data_status' => $province['data_status'],
             ]);
         }
     }

@@ -12,6 +12,7 @@ class Province extends Model
         'region_id',
         'name',
         'code',
+        'data_status',
     ];
 
     /**

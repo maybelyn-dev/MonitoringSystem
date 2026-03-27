@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Region;
 use App\Models\EconomicData;
 use App\Models\VehicleRegistration;
+use App\Models\Province;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -25,11 +27,12 @@ class DashboardController extends Controller
     /**
      * Display the dashboard with real economic data
      */
-    public function index()
+    public function index(Request $request)
     {
         // Get Region III data
         $region = Region::where('code', 'R3')->first();
-        $userProvinceId = Auth::user()?->province_id;
+        $userProvinceId = $this->resolveSelectedProvinceId($request);
+        $selectedYear = $this->resolveSelectedYear($request);
 
         if (!$region) {
             $metrics = [
@@ -75,15 +78,15 @@ class DashboardController extends Controller
             ));
         }
 
-        // Get latest banking data (2020)
+        // Get selected year banking data
         $latestBankingData = EconomicData::where('region_id', $region->id)
             ->where('data_type', 'banking')
-            ->where('year', 2020)
+            ->where('year', $selectedYear)
             ->first();
 
-        // Get latest vehicle registration data (2022); if user selected a province, scope to that province.
+        // Get selected year vehicle registration data; if user selected a province, scope to that province.
         $latestVehicleQuery = VehicleRegistration::where('region_id', $region->id)
-            ->where('year', 2022);
+            ->where('year', $selectedYear);
         if ($userProvinceId) {
             $latestVehicleQuery->where('province_id', $userProvinceId);
         } else {
@@ -91,30 +94,30 @@ class DashboardController extends Controller
         }
         $latestVehicleData = $latestVehicleQuery->first();
 
-        // Get latest operating income (2019)
+        // Get selected year operating income
         $latestIncomeData = EconomicData::where('region_id', $region->id)
             ->where('data_type', 'income')
-            ->where('year', 2019)
+            ->where('year', $selectedYear)
             ->first();
 
-        // Banking trend data (2011-2020)
+        // Banking trend data (filtered by selected year)
         $bankingTrend = EconomicData::where('region_id', $region->id)
             ->where('data_type', 'banking')
-            ->whereBetween('year', [2011, 2020])
+            ->where('year', $selectedYear)
             ->orderBy('year')
             ->get();
 
-        // Operating income trend data (2010-2019)
+        // Operating income trend data (filtered by selected year)
         $incomeTrend = EconomicData::where('region_id', $region->id)
             ->where('data_type', 'income')
-            ->whereBetween('year', [2010, 2019])
+            ->where('year', $selectedYear)
             ->orderBy('year')
             ->get();
 
-        // Vehicle registration by province (2022); if a province is selected, show only that province's data.
+        // Vehicle registration by province (selected year); if a province is selected, show only that province's data.
         $vehicleByProvinceQuery = VehicleRegistration::where('region_id', $region->id)
             ->whereNotNull('province_id')
-            ->where('year', 2022)
+            ->where('year', $selectedYear)
             ->with('province');
         if ($userProvinceId) {
             $vehicleByProvinceQuery->where('province_id', $userProvinceId);
@@ -198,5 +201,72 @@ class DashboardController extends Controller
             'latestVehicleData',
             'latestIncomeData'
         ));
+    }
+
+    public function selectProvince(Request $request)
+    {
+        $user = Auth::user();
+        if ($request->input('province_id') === 'all') {
+            $request->merge(['province_id' => null]);
+        }
+        $validated = $request->validate([
+            'province_id' => ['nullable', 'integer', 'exists:provinces,id'],
+            'year' => ['nullable', 'integer', 'min:2020', 'max:2026'],
+        ]);
+
+        $provinceId = $validated['province_id'] ?? null;
+        $year = $validated['year'] ?? null;
+
+        if (!$user || !$user->isSuperAdmin()) {
+            $provinceId = $provinceId ?: $user?->province_id;
+        }
+
+        $request->session()->put('province_id', $provinceId);
+        if ($year) {
+            $request->session()->put('year', $year);
+        }
+
+        return back();
+    }
+
+    private function resolveSelectedProvinceId(Request $request): ?int
+    {
+        $user = Auth::user();
+        $region = Region::where('code', 'R3')->first();
+        $provinceIds = $region
+            ? Province::where('region_id', $region->id)->pluck('id')->all()
+            : [];
+
+        $selected = $request->input('province_id')
+            ?? $request->session()->get('province_id')
+            ?? $user?->province_id;
+
+        if ($user && $user->isSuperAdmin()) {
+            return $selected ? (int) $selected : null;
+        }
+
+        if (!$selected || !in_array((int) $selected, $provinceIds, true)) {
+            if ($user?->province_id && in_array((int) $user->province_id, $provinceIds, true)) {
+                return (int) $user->province_id;
+            }
+
+            return $provinceIds[0] ?? null;
+        }
+
+        return (int) $selected;
+    }
+
+    private function resolveSelectedYear(Request $request): int
+    {
+        $year = $request->input('year')
+            ?? $request->session()->get('year')
+            ?? 2026;
+
+        $year = (int) $year;
+        if ($year < 2020 || $year > 2026) {
+            return 2026;
+        }
+
+        return $year;
     }
 }

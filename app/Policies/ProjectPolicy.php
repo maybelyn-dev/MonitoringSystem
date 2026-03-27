@@ -12,7 +12,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return $user->agency_id === $project->agency_id;
+        return $user->isSuperAdmin() || $user->agency_id === $project->agency_id;
     }
 
     /**
@@ -20,7 +20,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        return $user->agency_id === $project->agency_id;
+        return $user->isSuperAdmin() || $user->agency_id === $project->agency_id;
     }
 
     /**
@@ -28,6 +28,6 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        return $user->agency_id === $project->agency_id;
+        return $user->isSuperAdmin() || $user->agency_id === $project->agency_id;
     }
 }
