@@ -46,7 +46,14 @@ class AgencySeeder extends Seeder
         ];
 
         foreach ($agencies as $agency) {
-            Agency::create($agency);
+            Agency::updateOrCreate(
+                ['agency_name' => $agency['agency_name']],
+                [
+                    'province' => $agency['province'],
+                    'address' => $agency['address'],
+                    'contact' => $agency['contact'],
+                ]
+            );
         }
     }
 }

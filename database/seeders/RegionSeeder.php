@@ -14,11 +14,13 @@ class RegionSeeder extends Seeder
     public function run(): void
     {
         // Create Region III
-        $region = Region::create([
-            'name' => 'Region III - Central Luzon',
-            'code' => 'R3',
-            'description' => 'Regional monitoring system for Central Luzon provinces',
-        ]);
+        $region = Region::updateOrCreate(
+            ['code' => 'R3'],
+            [
+                'name' => 'Region III - Central Luzon',
+                'description' => 'Regional monitoring system for Central Luzon provinces',
+            ]
+        );
 
         // Create provinces
         $provinces = [
@@ -32,12 +34,13 @@ class RegionSeeder extends Seeder
         ];
 
         foreach ($provinces as $province) {
-            Province::create([
-                'region_id' => $region->id,
-                'name' => $province['name'],
-                'code' => $province['code'],
-                'data_status' => $province['data_status'],
-            ]);
+            Province::updateOrCreate(
+                ['region_id' => $region->id, 'name' => $province['name']],
+                [
+                    'code' => $province['code'],
+                    'data_status' => $province['data_status'],
+                ]
+            );
         }
     }
 }

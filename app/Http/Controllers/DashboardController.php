@@ -67,13 +67,11 @@ class DashboardController extends Controller
 
         $bankingTrend = EconomicData::where('region_id', $region->id)
             ->where('data_type', 'banking')
-            ->where('year', $selectedYear)
             ->orderBy('year')
             ->get();
 
         $incomeTrend = EconomicData::where('region_id', $region->id)
             ->where('data_type', 'income')
-            ->where('year', $selectedYear)
             ->orderBy('year')
             ->get();
 

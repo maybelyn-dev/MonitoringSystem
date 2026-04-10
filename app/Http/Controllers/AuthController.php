@@ -25,12 +25,20 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        if (Auth::attempt([
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-        ])) {
-            $request->session()->regenerate();
-            return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
+        $remember = (bool) $request->boolean('remember');
+        try {
+            if (Auth::attempt([
+                'email' => $validated['email'],
+                'password' => $validated['password'],
+            ], $remember)) {
+                $request->session()->regenerate();
+                return redirect()->intended(route('dashboard'))
+                    ->with('success', 'Logged in successfully!');
+            }
+        } catch (\RuntimeException $e) {
+            return back()->withErrors([
+                'email' => 'Your password needs to be reset. Please contact the admin.',
+            ]);
         }
 
         return back()->withErrors(['email' => 'Invalid credentials.']);
@@ -42,6 +50,8 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
         return redirect()->route('landing')->with('success', 'Logged out successfully!');
     }
 }

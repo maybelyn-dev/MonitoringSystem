@@ -21,15 +21,15 @@
             </div>
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '13.1']) }}"
+            <a href="{{ $isPublic ? route('stats.public', ['province_id' => $selectedProvinceId, 'table' => '13.1']) : route('regional-statistics', ['province_id' => $selectedProvinceId, 'table' => '13.1']) }}"
                class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '13.1' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
                 Motor Vehicles
             </a>
-            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.2']) }}"
+            <a href="{{ $isPublic ? route('stats.public', ['province_id' => $selectedProvinceId, 'table' => '16.2']) : route('regional-statistics', ['province_id' => $selectedProvinceId, 'table' => '16.2']) }}"
                class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '16.2' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
                 Banking Deposits
             </a>
-            <a href="{{ route('regional-statistics', ['province' => $selectedProvince, 'table' => '16.3']) }}"
+            <a href="{{ $isPublic ? route('stats.public', ['province_id' => $selectedProvinceId, 'table' => '16.3']) : route('regional-statistics', ['province_id' => $selectedProvinceId, 'table' => '16.3']) }}"
                class="px-3 py-1.5 rounded-lg border {{ ($selectedTable ?? '13.1') === '16.3' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200' }}">
                 Banking Income
             </a>

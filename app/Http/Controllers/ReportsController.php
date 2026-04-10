@@ -82,11 +82,6 @@ class ReportsController extends Controller
             abort(403, 'Only Super Admin can update regional reports.');
         }
 
-        $region = Region::where('code', 'R3')->firstOrFail();
-        $bankingYear = (int) $request->input('banking_year', 2020);
-        $incomeYear = (int) $request->input('income_year', 2019);
-        $vehiclesYear = (int) $request->input('vehicles_year', 2022);
-
         $validated = $request->validate([
             'total_liabilities' => ['required', 'numeric', 'min:0'],
             'operating_income' => ['required', 'numeric', 'min:0'],
@@ -98,6 +93,11 @@ class ReportsController extends Controller
             'income_year' => ['required', 'integer', 'min:2010', 'max:2019'],
             'vehicles_year' => ['required', 'integer', 'min:2018', 'max:2022'],
         ]);
+
+        $region = Region::where('code', 'R3')->firstOrFail();
+        $bankingYear = (int) $validated['banking_year'];
+        $incomeYear = (int) $validated['income_year'];
+        $vehiclesYear = (int) $validated['vehicles_year'];
 
         EconomicData::updateOrCreate(
             [

@@ -152,6 +152,12 @@
                     </button>
                 </div>
 
+                @if ($errors->any())
+                    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
                 <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
                     @csrf
                     <div>
@@ -183,6 +189,7 @@
         const modal = document.getElementById('login-modal');
         const openButtons = [document.getElementById('open-login'), document.getElementById('open-login-cta')];
         const closeButton = document.getElementById('close-login');
+        const hasErrors = @json($errors->any());
 
         const openModal = () => modal.classList.remove('hidden');
         const closeModal = () => modal.classList.add('hidden');
@@ -194,6 +201,9 @@
                 closeModal();
             }
         });
+        if (hasErrors) {
+            openModal();
+        }
     </script>
 </body>
 </html>
