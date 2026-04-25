@@ -82,6 +82,10 @@ php artisan key:generate
 
 ### 3. Database Setup
 ```bash
+# Create the database first (XAMPP / MySQL):
+# - Database name must match `DB_DATABASE` in your `.env` (default: `monitoring_system`)
+# - Example (MySQL CLI): CREATE DATABASE monitoring_system;
+#
 # Run migrations
 php artisan migrate
 

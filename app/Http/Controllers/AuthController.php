@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\QueryException;
 
 class AuthController extends Controller
 {
@@ -35,6 +36,10 @@ class AuthController extends Controller
                 return redirect()->intended(route('dashboard'))
                     ->with('success', 'Logged in successfully!');
             }
+        } catch (QueryException $e) {
+            return back()->withErrors([
+                'email' => 'Database is not configured yet. Please set up the database and run migrations.',
+            ]);
         } catch (\RuntimeException $e) {
             return back()->withErrors([
                 'email' => 'Your password needs to be reset. Please contact the admin.',
